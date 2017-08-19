@@ -403,7 +403,7 @@ function create_button(name, x, y, func)
     btn.scale.x = btn_scale;
     btn.scale.y = btn_scale;
     btn.interactive = true;
-    btn.click = func;
+    btn.on('pointerdown', func);
 
     var textStyle = {
         fontSize : 36,

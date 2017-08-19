@@ -64,7 +64,7 @@ function createButton(res_name, x, y, callback)
     sprite.x = x;
     sprite.y = y;
     sprite.interactive = true;
-    sprite.click = callback;
+    sprite.on('pointerdown', callback);
     return sprite;
 }
 

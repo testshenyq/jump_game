@@ -130,7 +130,7 @@ var start_time = 0;
 var delta_time = 0;
 var last_time = 0;
 var last_touch_time = 0;
-var touch_time_interval = 120;
+var touch_time_interval = 160;
 
 // Create stage & render
 var stage = new PIXI.Container();
@@ -202,10 +202,11 @@ function add_object(ob)
 
 function remove_object(ob)
 {
-    // var idx = scene_obs.indexOf(ob);
-    // scene_obs.splice(idx, 1);
-    ob.removed = true;
-    remove_obs.push(ob);
+    var idx = scene_obs.indexOf(ob);
+    if (idx >= 0)
+        scene_obs.splice(idx, 1);
+    // ob.removed = true;
+    // remove_obs.push(ob);
 }
 
 // A BrickLevel contains two line brick with a gap
@@ -730,6 +731,7 @@ function play()
     update_player();
     update_scene_obs();
 
+    /*
     // Remove the obs need to be removed
     for (var i = 0; i < remove_obs.length; i++)
     {
@@ -737,7 +739,7 @@ function play()
         var idx = scene_obs.indexOf(ob);
         if (idx >= 0)
             scene_obs.splice(idx, 1);
-    }
+    }*/
     remove_obs = [];
 
     // update_bricks();

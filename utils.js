@@ -1,5 +1,5 @@
 // utils.js
-//
+
 //Aliases
 var Container = PIXI.Container,
     autoDetectRenderer = PIXI.autoDetectRenderer,

@@ -12,7 +12,6 @@ var Container = PIXI.Container,
 
 var player_image = "images/players/1.png";
 var bg_image = "images/bg_sky.jpg"
-var brick_image = "images/brick.jpg"
 var login_bg_image = "images/login_bg.jpg"
 var start_bg_image = "images/start_bg.jpg"
 var button_image = "images/button.png"
@@ -50,7 +49,6 @@ function start_loading()
     loader
       .add(player_image)
       .add(bg_image)
-      .add(brick_image)
       .add(login_bg_image)
       .add(start_bg_image)
       .add(button_image)
@@ -136,6 +134,7 @@ var touch_time_interval = 200;
 // Create stage & render
 var stage = new PIXI.Container();
 var renderer = PIXI.autoDetectRenderer(size[0], size[1], null);
+document.body.appendChild(renderer.view);renderer.view.style.position = 'absolute';renderer.view.style.left = '50%';renderer.view.style.top = '50%';renderer.view.style.transform = 'translate3d( -50%, -50%, 0 )';
 document.body.appendChild(renderer.view);
 resize();
 

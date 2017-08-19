@@ -204,6 +204,7 @@ function remove_object(ob)
 {
     // var idx = scene_obs.indexOf(ob);
     // scene_obs.splice(idx, 1);
+    ob.removed = true;
     remove_obs.push(ob);
 }
 
@@ -263,6 +264,9 @@ class Star
 
     update_collide()
     {
+        if (this.removed)
+            return;
+
          if (is_collide(-this.sprite.width/2, -this.sprite.height/2, this.sprite))
          {
             // notify_add_score();
@@ -320,6 +324,7 @@ function start_game()
     stars = [];
     op_list = [];
     scene_obs = [];
+    remove_obs = [];
     eat_stars = [];
     start_time = Date.now();
     Math.seedrandom(start_time.toString());

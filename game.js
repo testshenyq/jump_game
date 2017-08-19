@@ -99,8 +99,8 @@ var gravity = 30;
 var level_height = 1200;
 var gap_size_range = [500,600];
 var gap_pos_range = 200;
-var box_pos_info = [200, 850, 50];
-var star_pos_info = [150, 550, 100];
+var box_pos_info = [200, 800, 50];
+var star_pos_info = [150, 500, 100];
 var prepare_level = canvas_height / level_height;
 var camera_focus_pos = canvas_height / 2;
 var camera_pos = 0;
@@ -129,7 +129,7 @@ var start_time = 0;
 var delta_time = 0;
 var last_time = 0;
 var last_touch_time = 0;
-var touch_time_interval = 200;
+var touch_time_interval = 120;
 
 // Create stage & render
 var stage = new PIXI.Container();
@@ -686,7 +686,11 @@ function build_scene(level)
 
 function build_brick(level)
 {
-    var gap_size = gap_size_range[0] + (gap_size_range[1] - gap_size_range[0]) * Math.random()
+    // Change gap size by level
+    var gap_size = gap_size_range[0] + (gap_size_range[1] - gap_size_range[0]) * Math.random();
+    var max_change_scale = 0.25;
+    var size_scale = 1 - Math.min(max_change_scale * level / 20, max_change_scale);
+    gap_size *= size_scale;
     var gap_pos = rand1() * gap_pos_range;
     var brick_level = new BrickLevel(level, gap_size, gap_pos);
     add_object(brick_level);

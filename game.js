@@ -119,6 +119,7 @@ var boxes;
 var stars;
 var scene_obs = [];
 var eat_stars = [];
+var remove_obs = [];
 
 // Security
 var report_scroe = 20;
@@ -157,11 +158,7 @@ var cat, box, message, state;
 var bg;
 
 renderer.plugins.interaction.on('pointerdown', function(e) { 
-    if (game_state == "start")
-    {
-        start_game(); 
-    }
-    else if (game_state == "play")
+    if (game_state == "play")
     {
         // Check touch internal
         if (last_time - last_touch_time < touch_time_interval)
@@ -205,8 +202,9 @@ function add_object(ob)
 
 function remove_object(ob)
 {
-    var idx = scene_obs.indexOf(ob);
-    scene_obs.splice(idx, 1);
+    // var idx = scene_obs.indexOf(ob);
+    // scene_obs.splice(idx, 1);
+    remove_obs.push(ob);
 }
 
 // A BrickLevel contains two line brick with a gap
@@ -267,7 +265,7 @@ class Star
     {
          if (is_collide(-this.sprite.width/2, -this.sprite.height/2, this.sprite))
          {
-            notify_add_score();
+            // notify_add_score();
             remove_object(this);
             play_eat_star(this.get_render_ob()); 
          }
@@ -485,9 +483,12 @@ function show_start_window()
 {
     game_state = "start";
     clear_scene();
-
     var start_bg = new Sprite(resources[start_bg_image].texture);
     fill_sprite(start_bg);
+    start_bg.interactive = true;
+    start_bg.on('pointerdown', function() {
+        start_game();
+    });
     stage.addChild(start_bg);
 }
 
@@ -723,6 +724,17 @@ function play()
 
     update_player();
     update_scene_obs();
+
+    // Remove the obs need to be removed
+    for (var i = 0; i < remove_obs.length; i++)
+    {
+        var ob = remove_obs[i];
+        var idx = scene_obs.indexOf(ob);
+        if (idx >= 0)
+            scene_obs.splice(idx, 1);
+    }
+    remove_obs = [];
+
     // update_bricks();
     // update_boxes();
 }

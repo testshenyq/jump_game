@@ -270,7 +270,7 @@ class Star
 
          if (is_collide(-this.sprite.width/2, -this.sprite.height/2, this.sprite))
          {
-            // notify_add_score();
+            notify_add_score();
             remove_object(this);
             play_eat_star(this.get_render_ob()); 
          }

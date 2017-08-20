@@ -19,6 +19,7 @@ var rank_bg_image = "images/rank_bg.png"
 var rank_mask_image = "images/rank_bg_mask.png"
 var rank_window_image = "images/rank_window.png"
 var rank_item_image = "images/rank_item.jpg"
+var btn_ok_image = "images/btn_ok.png"
 var btn_return_image = "images/btn_return.png"
 var btn_retry_image = "images/btn_retry.jpg"
 var btn_rank_image = "images/btn_rank.jpg"
@@ -26,7 +27,7 @@ var brick_line_image = "images/brick_line.jpg"
 var box_image = "images/death_box.png"
 var star_image = "images/star.png"
 var loading_image = "images/black_bg.jpg"
-var gift_bg_image = "images/gift_box.png"
+var gift_bg_image = "images/gift_item_bg.png"
 
 loader.add(loading_image)
     .load(start_loading);
@@ -56,6 +57,7 @@ function start_loading()
       .add(rank_item_image)
       .add(rank_mask_image)
       .add(rank_window_image)
+      .add(btn_ok_image)
       .add(btn_return_image)
       .add(btn_retry_image)
       .add(btn_rank_image)
@@ -200,13 +202,20 @@ function add_object(ob)
     stage.addChild(ob.get_render_ob());
 }
 
+function add_to_remove_list(ob, remove_render)
+{
+    ob.removed = true;
+    ob.remove_render = remove_render;
+    remove_obs.push(ob);
+}
+
 function remove_object(ob)
 {
     var idx = scene_obs.indexOf(ob);
     if (idx >= 0)
         scene_obs.splice(idx, 1);
-    // ob.removed = true;
-    // remove_obs.push(ob);
+    if (ob.remove_render)
+        stage.removeChild(ob.get_render_ob());
 }
 
 // A BrickLevel contains two line brick with a gap
@@ -235,7 +244,7 @@ class BrickLevel
         return this.container;
     }
 
-    update_collide()
+    update()
     {
         var x = 0;
         var y = this.container.y;
@@ -263,7 +272,7 @@ class Star
         return this.sprite;
     }
 
-    update_collide()
+    update()
     {
         if (this.removed)
             return;
@@ -271,7 +280,7 @@ class Star
          if (is_collide(-this.sprite.width/2, -this.sprite.height/2, this.sprite))
          {
             notify_add_score();
-            remove_object(this);
+            add_to_remove_list(this, false);
             play_eat_star(this.get_render_ob()); 
          }
     }
@@ -294,7 +303,7 @@ class DeathBox
         return this.sprite;        
     }
 
-    update_collide()
+    update()
     {
         if (is_collide(-this.sprite.width/2, -this.sprite.height/2, this.sprite))
             notify_game_over();
@@ -386,7 +395,7 @@ function gameLoop()
 function jump(jmp_left)
 {
     var op_time = Math.floor((last_time - start_time) / 10);
-    op_list.push([op_time, jmp_left ? 1 : 0]);
+    op_list.push((op_time << 1) + (jmp_left ? 1 : 0));
     apply_speed(jmp_left ? - jmp_horz_speed : jmp_horz_speed, -jmp_vert_speed);
 }
 
@@ -394,33 +403,6 @@ function apply_speed(x, y)
 {
     cat.vx = x;
     cat.vy = y;
-}
-
-function create_button(name, x, y, func)
-{
-    var btn_scale = 4;
-    var text_offx = 50;
-    var text_offy = 32;
-
-    var btn = new Sprite(resources[button_image].texture);
-    btn.scale.x = btn_scale;
-    btn.scale.y = btn_scale;
-    btn.interactive = true;
-    btn.on('pointerdown', func);
-
-    var textStyle = {
-        fontSize : 36,
-        fill : '#ffffff',
-    };
-    var basicText = new PIXI.Text(name, textStyle);
-    basicText.x = x + text_offx;
-    basicText.y = y + text_offy;
-    btn.x = x;
-    btn.y = y;
-
-    stage.addChild(btn);
-    stage.addChild(basicText);
-    return btn;
 }
 
 function create_rect_box(width, height, color)
@@ -438,51 +420,9 @@ function show_login_window()
 {
     clear_scene();
     game_state = "login";
-    var login_bg = new Sprite(resources[login_bg_image].texture);
-    fill_sprite(login_bg);
-    stage.addChild(login_bg);
 
-    var text = createText('寻找有趣的灵魂', 60, '0xffffff', canvas_width / 2, 500);
-    text.anchor.set(0.5);
-    stage.addChild(text);
-
-    create_button("  排行榜 ", 100, canvas_height / 2, function() {
-        console.log("排行榜");
-        show_rank_window();
-    });
-    create_button("学生登录", canvas_width / 2 - 120, canvas_height / 2, function() {
-        console.log("学生登陆");
-        alert("Not supported");
-    });
-    create_button("游客登录", canvas_width - 350, canvas_height / 2, function() {
-        console.log("游客登录");
-        show_start_window();
-    });
-
-    text = createText('找有趣的灵魂·赢取万元大奖', 
-            40, '0x444444', canvas_width / 2, canvas_height / 2 + 400);
-    stage.addChild(text);
-
-    var gift_interval = 50;
-    var gift_x = 180;
-    var height_off = -300;
-    for (var i = 0; i < 5; i++)
-    {
-        var gift_bg = new Sprite(resources[gift_bg_image].texture);
-        gift_bg.anchor.set(0.5);
-        var gift_sprite = new Sprite(resources["images/gift1.png"].texture);
-        gift_sprite.anchor.set(0.5);
-        gift_bg.x = gift_x + i * (gift_sprite.width + gift_interval);
-        gift_bg.y = canvas_height + height_off;
-        gift_sprite.x = gift_x + i * (gift_sprite.width + gift_interval);
-        gift_sprite.y = canvas_height + height_off;
-        gift_sprite.scale.set(0.8);
-        stage.addChild(gift_bg);
-        stage.addChild(gift_sprite);
-    }
-
-    text.anchor.set(0.5);
-    stage.addChild(text);
+    var window = new LoginWindow();
+    window.attachTo(stage);
 }
 
 function show_start_window()
@@ -510,6 +450,12 @@ function show_rank_window()
     rank_wnd.attachTo(stage);
 }
 
+function show_register_window()
+{
+    var reg_wnd = new RegisterWindow(canvas_width / 2, 200);
+    reg_wnd.attachTo(stage);
+}
+
 function show_game_over_window()
 {
     game_state = "game_over";
@@ -527,8 +473,6 @@ function show_game_over_window()
                 show_rank_window();        
             });
     btn_rank.scale.set(2);
-
-    console.log(op_list);
     stage.addChild(btn_retry);
     stage.addChild(btn_rank);
 }
@@ -536,7 +480,7 @@ function show_game_over_window()
 function notify_add_score()
 {
     star_score++;
-    update_score();
+    update_score(true);
 }
 
 function player_dead()
@@ -555,8 +499,6 @@ function notify_game_over()
 
     if (score > user_max_score)
     {
-        console.log("scoe = {0}, max_score = {1}".format(score, user_max_score));
-
         // TODO: Connect to server and report the result
         if (score > report_scroe)
         {
@@ -567,15 +509,17 @@ function notify_game_over()
 }
 
 // Update score
-function update_score()
+function update_score(force)
 {
     var level_height_offset = -canvas_height / 2 + 200;
     var new_score = Math.floor((camera_pos + level_height_offset) / level_height);
-    if (new_score > level_score)
+    if (new_score > level_score || force)
+    {
         level_score = new_score;
-
-    var score = level_score + star_score;
-    score_label.text = score.toString();
+        var score = level_score + star_score;
+        score_label.text = score.toString();
+        console.log(scene_obs.length, stage.children.length);
+    }
 }
 
 function update_scene_obs()
@@ -592,13 +536,28 @@ function update_scene_obs()
     for (var i = 0; i < scene_obs.length; i++)
     {
         var ob = scene_obs[i];
+        if (ob.removed)
+            continue;
+
         var render_ob = ob.get_render_ob();
         var x = ob.x;
         var y = ob.y;
         y = camera_pos - y;
         render_ob.x = x;
         render_ob.y = Math.floor(y);
-        ob.update_collide();
+        ob.update();
+
+        // Out of screen, remove it
+        if (!ob.removed && y > canvas_height * 1.2)
+            add_to_remove_list(ob, true);
+    }
+
+    if (remove_obs.length > 0)
+    {
+        console.log("remove", remove_obs.length);
+        for (var i = 0; i < remove_obs.length; i++)
+            remove_object(remove_obs[i]);
+        remove_obs.length = 0;
     }
 }
 
@@ -669,7 +628,7 @@ function update_player()
     {
         camera_pos = py;
         cat.y = camera_focus_pos;
-        update_score();
+        update_score(false);
     }
 
     // Fall to the bottom of screen, game over

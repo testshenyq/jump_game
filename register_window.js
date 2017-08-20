@@ -49,12 +49,18 @@ function create_text_box(label, x, y)
         editing_input = input;
         var canvas = renderer.view;
         var ws = canvas.offsetHeight / canvas_height;
+        global_input.onblur = function() {
+            update_input();
+            disable_global_input();
+        }
         enable_global_input();
         global_input.value = input_text.text; 
+        /*
         global_input.style.width = (input.width * ws).toString() +"px";
         global_input.style.height = (input.height * ws).toString() + "px";
         global_input.style.left = (canvas.offsetLeft - canvas.offsetWidth/2 + (x + input_off + regwnd_x) * ws).toString() + "px";
         global_input.style.top = ((y+regwnd_y) * ws).toString() + "px";
+        */
     });
     input.input_text = input_text;
     input.x = input_off;

@@ -44,14 +44,13 @@ function fill_sprite(sprite)
 
 function enable_global_input()
 {
-    global_input.style.opacity = 100;
+    global_input.style.visibility = 'visible';
+    global_input.focus();
 }
 
 function disable_global_input()
 {
-    global_input.style.opacity = 0;
-    global_input.left = '0px';
-    global_input.top = '0px';
+    global_input.style.visibility = 'hidden';
 }
 
 function createText(text, size, color, x, y, extra_info = null)

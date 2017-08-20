@@ -146,16 +146,11 @@ document.body.appendChild(renderer.view);
 resize();
 
 // Create default input element
-var global_input = document.createElement('input');
-global_input.type = 'text';
+var global_input = document.getElementById("global_input");
 global_input.tabindex = -1;
-global_input.style.position = 'absolute';
-global_input.style.left = '0px';
-global_input.style.top = '0px';
-global_input.style.opacity = 0;
-global_input.style.width = '380px';
-global_input.style.height = '65px';
+
 /*
+global_input.style.position = 'absolute';
 input.style.opacity = 100;
 input.style.left = '0px';
 input.style.bottom = '0px';

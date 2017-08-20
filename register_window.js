@@ -25,7 +25,7 @@ function update_input()
           editing_input.input_text.text = global_input.value;
 }
 
-function create_text_box(label, x, y)
+function create_text_box(label, info, x, y)
 {
     var font_size = 50;
     var input_width = 400;
@@ -45,22 +45,9 @@ function create_text_box(label, x, y)
     input.scale.set(0.5);
     input.interactive = true;
     input.on('pointerdown', function(e){ 
-        update_input();
-        editing_input = input;
-        var canvas = renderer.view;
-        var ws = canvas.offsetHeight / canvas_height;
-        global_input.onblur = function() {
-            update_input();
-            disable_global_input();
-        }
-        enable_global_input();
-        global_input.value = input_text.text; 
-        /*
-        global_input.style.width = (input.width * ws).toString() +"px";
-        global_input.style.height = (input.height * ws).toString() + "px";
-        global_input.style.left = (canvas.offsetLeft - canvas.offsetWidth/2 + (x + input_off + regwnd_x) * ws).toString() + "px";
-        global_input.style.top = ((y+regwnd_y) * ws).toString() + "px";
-        */
+        var str = window.prompt('请输入' + label);
+        input_text.text = str;
+        user_info[info] = str;
     });
     input.input_text = input_text;
     input.x = input_off;
@@ -109,35 +96,33 @@ class RegisterWindow
         var yoff = 400, ygap = 120;
         var input;
 
-        input = create_text_box("姓名", xoff, yoff);
+        input = create_text_box("姓名", 'name', xoff, yoff);
         window.addChild(input);
         yoff += ygap;
 
-        input = create_text_box("学校", xoff, yoff);
+        input = create_text_box("学校", 'school', xoff, yoff);
         window.addChild(input);
         yoff += ygap;
 
-        input = create_text_box("学号", xoff, yoff);
+        input = create_text_box("学号", 'student_id', xoff, yoff);
         window.addChild(input);
         yoff += ygap;
 
-        input = create_text_box("手机", xoff, yoff);
+        input = create_text_box("手机", 'phone', xoff, yoff);
         window.addChild(input);
 
         // Create buttons
         var ok_btn = createButton(btn_ok_image, width/2 - 150, height - 200,
             function(){
-                update_input();
-                disable_global_input();
                 // TODO: connect to server and register
+                console.log(user_info);
+                stage.removeChild(window);
             }
         );
         ok_btn.scale.set(1.5);
 
         var ret_btn = createButton(btn_return_image, width/2 + 150, height - 200,
             function(){
-                update_input();
-                disable_global_input();
                 stage.removeChild(window);
             }
         );

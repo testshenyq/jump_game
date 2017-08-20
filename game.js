@@ -137,9 +137,33 @@ var touch_time_interval = 160;
 // Create stage & render
 var stage = new PIXI.Container();
 var renderer = PIXI.autoDetectRenderer(size[0], size[1], null);
-document.body.appendChild(renderer.view);renderer.view.style.position = 'absolute';renderer.view.style.left = '50%';renderer.view.style.top = '50%';renderer.view.style.transform = 'translate3d( -50%, -50%, 0 )';
+document.body.appendChild(renderer.view);
+renderer.view.style.position = 'absolute';
+renderer.view.style.left = '50%';
+renderer.view.style.top = '50%';
+renderer.view.style.transform = 'translate3d( -50%, -50%, 0 )';
 document.body.appendChild(renderer.view);
 resize();
+
+// Create default input element
+var global_input = document.createElement('input');
+global_input.type = 'text';
+global_input.tabindex = -1;
+global_input.style.position = 'absolute';
+global_input.style.left = '0px';
+global_input.style.top = '0px';
+global_input.style.opacity = 0;
+global_input.style.width = '380px';
+global_input.style.height = '65px';
+/*
+input.style.opacity = 100;
+input.style.left = '0px';
+input.style.bottom = '0px';
+input.style.right = '100px';
+input.style.top = '-100px';
+input.style.zIndex = 10;
+*/
+document.body.appendChild(global_input);
 
 function resize() {
     if (window.innerWidth / window.innerHeight >= ratio) {
@@ -420,7 +444,6 @@ function show_login_window()
 {
     clear_scene();
     game_state = "login";
-
     var window = new LoginWindow();
     window.attachTo(stage);
 }

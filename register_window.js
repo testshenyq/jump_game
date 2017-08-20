@@ -13,7 +13,17 @@ var Container = PIXI.Container,
 var window_bg = "images/rank_bg.png"
 var btn_ok_image = "images/btn_ok.png"
 var btn_return_image = "images/btn_return.png"
+var input_image = "images/rank_item.jpg"
 var window_size = [850,1300]
+var editing_input;
+var regwnd_x;
+var regwnd_y;
+
+function update_input()
+{
+    if (editing_input != null && global_input.value != null)
+          editing_input.input_text.text = global_input.value;
+}
 
 function create_text_box(label, x, y)
 {
@@ -23,18 +33,36 @@ function create_text_box(label, x, y)
     var wnd = new Container();
     wnd.x = x;
     wnd.y = y;
+    var input_off = 200;
 
     var text = createText(label, font_size, '0x030303', 0, 0);
+    var input_text = createText("", 40, "0x030303", input_off, 3);
+    /*
     var input = new PixiTextInput("", {
         fontSize : font_size, 
+    });*/
+    var input = new Sprite(resources[input_image].texture);
+    input.scale.set(0.5);
+    input.interactive = true;
+    input.on('pointerdown', function(e){ 
+        update_input();
+        editing_input = input;
+        var canvas = renderer.view;
+        var ws = canvas.offsetHeight / canvas_height;
+        enable_global_input();
+        global_input.value = input_text.text; 
+        global_input.style.width = (input.width * ws).toString() +"px";
+        global_input.style.height = (input.height * ws).toString() + "px";
+        global_input.style.left = (canvas.offsetLeft - canvas.offsetWidth/2 + (x + input_off + regwnd_x) * ws).toString() + "px";
+        global_input.style.top = ((y+regwnd_y) * ws).toString() + "px";
     });
-    input.width = input_width;
-    input.height = input_height;
-    input.x = 200;
+    input.input_text = input_text;
+    input.x = input_off;
     input.y = 0;
 
     wnd.addChild(text);
     wnd.addChild(input);
+    wnd.addChild(input_text);
 
     return wnd;
 }
@@ -50,6 +78,8 @@ class RegisterWindow
         var height = window_size[1];
         window.x = x - width / 2;
         window.y = y;
+        regwnd_x = window.x;
+        regwnd_y = y;
 
         // Create bg sprite
         var bg = new Sprite(resources[window_bg].texture);
@@ -91,6 +121,8 @@ class RegisterWindow
         // Create buttons
         var ok_btn = createButton(btn_ok_image, width/2 - 150, height - 200,
             function(){
+                update_input();
+                disable_global_input();
                 // TODO: connect to server and register
             }
         );
@@ -98,6 +130,8 @@ class RegisterWindow
 
         var ret_btn = createButton(btn_return_image, width/2 + 150, height - 200,
             function(){
+                update_input();
+                disable_global_input();
                 stage.removeChild(window);
             }
         );

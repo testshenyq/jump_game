@@ -42,6 +42,18 @@ function fill_sprite(sprite)
     sprite.scale.y = canvas_height / sprite.height;
 }
 
+function enable_global_input()
+{
+    global_input.style.opacity = 100;
+}
+
+function disable_global_input()
+{
+    global_input.style.opacity = 0;
+    global_input.left = '0px';
+    global_input.top = '0px';
+}
+
 function createText(text, size, color, x, y, extra_info = null)
 {
     var textStyle = {

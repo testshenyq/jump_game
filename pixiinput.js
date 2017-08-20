@@ -67,7 +67,7 @@ function PixiTextInput(text, style) {
 	this.backgroundGraphics.buttonMode = true;
 	this.backgroundGraphics.defaultCursor = "text";
 
-	this.backgroundGraphics.mousedown = this.onBackgroundMouseDown.bind(this);
+	this.backgroundGraphics.on('pointerdown', this.onBackgroundMouseDown.bind(this));
 	this.keyEventClosure = this.onKeyEvent.bind(this);
 	this.windowBlurClosure = this.onWindowBlur.bind(this);
 	this.documentMouseDownClosure = this.onDocumentMouseDown.bind(this);
@@ -114,6 +114,7 @@ PixiTextInput.prototype.focus = function() {
 	document.addEventListener("keydown", this.keyEventClosure);
 	document.addEventListener("keypress", this.keyEventClosure);
 	document.addEventListener("mousedown", this.documentMouseDownClosure);
+	document.addEventListener("touchend", this.documentMouseDownClosure);
 	window.addEventListener("blur", this.windowBlurClosure);
 
 	this.showCaret();

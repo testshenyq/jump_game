@@ -11,12 +11,22 @@ var Container = PIXI.Container,
 
 class ScrollWindow
 {
-    constructor(sprite, x, y)
+    constructor(sprite, mask_sprite, x, y, width, height)
     {
-        this.width = sprite.width;
-        this.height = sprite.height; 
-        sprite.x = x - sprite.width / 2;
-        sprite.y = y;
+        var window = new Container();
+        window.x = x;
+        window.y = y;
+        window.addChild(sprite);
+        window.addChild(mask_sprite);
+        this.window = window;
+        this.width = width;
+        this.height = height;
+        
+        sprite.interactive = true;
+
+        resize_sprite(sprite, width, height);
+        resize_sprite(mask_sprite, width, height);
+
         sprite
             .on('pointerdown', this.onDragStart)
             .on('pointerup', this.onDragEnd)
@@ -24,9 +34,10 @@ class ScrollWindow
             .on('pointermove', this.onDragMove);
 
         this.container = new Container();
-        this.sprite = sprite;
-        this.sprite.addChild(this.container);
-        this.sprite.scroll_wnd = this;
+        this.container.mask = mask_sprite;
+        window.addChild(this.container);
+
+        sprite.scroll_wnd = this;
         this.items = [];
         this.xoff = 20;
         this.yoff = 20;
@@ -58,8 +69,6 @@ class ScrollWindow
         item.anchor.set(0,0);
         item.x = this.xoff;
         item.y = this.items.length * height + this.yoff;
-        item.interactive = true;
-        item.buttonMode = true;
         this.container.addChild(item);
         this.items.push(item);
         this.min_pos = Math.min(0, this.height - (this.items.length * height + this.yoff));

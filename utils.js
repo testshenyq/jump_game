@@ -23,6 +23,11 @@ if (!String.prototype.format) {
   };
 }
 
+function resize_sprite(sprite, width, height)
+{
+    sprite.scale.set(width / sprite.width, height / sprite.height);
+}
+
 function rand1()
 {
     return (Math.random() - 0.5) * 2;

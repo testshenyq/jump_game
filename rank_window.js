@@ -14,6 +14,7 @@ var rank_bg_image = "images/rank_bg.png"
 var rank_mask_image = "images/rank_bg_mask.png"
 var rank_item_image = "images/rank_item.jpg"
 var btn_return_image = "images/btn_return.png"
+var scroll_size = [850, 850];
 
 class RankItem
 {
@@ -77,14 +78,15 @@ class RankWindow
 
         // Create scroll window
         var scroll_wnd_sprite = new Sprite(resources[rank_bg_image].texture);
-        scroll_wnd_sprite.interactive = true;
-        scroll_wnd_sprite.anchor.set(0,0);
         var mask_sprite = new Sprite(resources[rank_mask_image].texture);
-        scroll_wnd_sprite.mask = mask_sprite;
-        scroll_wnd_sprite.addChild(mask_sprite);
-        this.scroll_window = new ScrollWindow(scroll_wnd_sprite, window.width / 2, 300);
+        this.scroll_window = new ScrollWindow(
+                scroll_wnd_sprite, 
+                mask_sprite, 
+                window.width / 2 - scroll_size[0] / 2, 300, 
+                scroll_size[0], scroll_size[1]);
+
         this.scroll_window.setItemInfo(40, 10);
-        window.addChild(scroll_wnd_sprite);
+        window.addChild(this.scroll_window.window);
 
         // Init my info
         this.initMyInfo();

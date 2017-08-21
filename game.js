@@ -14,7 +14,6 @@ var player_image = "images/players/player.png";
 var bg_image = "images/bg_sky.jpg"
 var login_bg_image = "images/login_bg.jpg"
 var start_bg_image = "images/start_bg.jpg"
-var button_image = "images/button.png"
 var scroll_bg_image = "images/transparent.png"
 var rank_mask_image = "images/white.jpg"
 var rank_window_image = "images/rank_wnd.jpg"
@@ -44,7 +43,6 @@ var res_list = [
     bg_image,
     login_bg_image,
     start_bg_image,
-    button_image,
     scroll_bg_image,
     rank_item_image,
     rank_mask_image,
@@ -126,8 +124,14 @@ var gravity = 1000;
 var level_height = 600;
 var gap_size_range = [canvas_width * 0.45, canvas_width * 0.55];
 var gap_pos_range = canvas_width * 0.185;
-var box_pos_info = [canvas_width * 0.185, canvas_height * 0.42, canvas_height * 0.026];
-var star_pos_info = [canvas_width * 0.14, canvas_height * 0.252, canvas_height * 0.052];
+var box_pos_info = [
+    [canvas_width * 0.185, canvas_height * 0.42, canvas_height * 0.026],
+    [canvas_width * 0.22, canvas_height * 0.25, canvas_height * 0.035],
+];
+var star_pos_info = [
+    [canvas_width * 0.14, canvas_height * 0.252, canvas_height * 0.052],
+    [canvas_width * 0.2, canvas_height * 0.15, canvas_height * 0.08]
+];
 var prepare_level = canvas_height / level_height;
 var camera_focus_pos = canvas_height / 2;
 var camera_pos = 0;
@@ -318,14 +322,14 @@ class BrickLevel
 // Star object, add score when collide
 class Star
 {
-    constructor(level)
+    constructor(level, idx)
     {
         this.level = level;     
         this.sprite = new Sprite(resources[star_image].texture);
         this.sprite.anchor.set(0.5);
         this.sprite.pivot.set(0.5);
-        this.x = canvas_width / 2 + rand1() * star_pos_info[0];
-        this.y = level * level_height + star_pos_info[1] + rand1() * star_pos_info[2];
+        this.x = canvas_width / 2 + rand1() * star_pos_info[idx][0];
+        this.y = level * level_height + star_pos_info[idx][1] + rand1() * star_pos_info[idx][2];
     }
 
     get_render_ob()
@@ -352,13 +356,13 @@ class Star
 // Death box, dead when collide
 class DeathBox
 {
-    constructor(level)
+    constructor(level, idx)
     {
         this.level = level;     
         this.sprite = new Sprite(resources[box_image].texture);
         this.sprite.anchor.set(0.5);
-        this.x = canvas_width / 2 + rand1() * box_pos_info[0];
-        this.y = level * level_height + box_pos_info[1] + rand1() * box_pos_info[2];
+        this.x = canvas_width / 2 + rand1() * box_pos_info[idx][0];
+        this.y = level * level_height + box_pos_info[idx][1] + rand1() * box_pos_info[idx][2];
     }
 
     get_render_ob()
@@ -801,14 +805,40 @@ function build_brick(level)
 
 function build_box(level)
 {
-    var box = new DeathBox(level);
-    add_object(box);
+    // Refresh some boxes
+    var num = 1;
+    if (level > 20)
+        num = 2;
+    else if (level > 10)
+    {
+        if (Math.random() < (level - 10) * 0.1)
+            num = 2;
+    }
+
+    for (var i = 0; i < num; i++)
+    {
+        var box = new DeathBox(level, i);
+        add_object(box);
+    }
 }
 
 function build_star(level)
 {
-    var star = new Star(level);
-    add_object(star);
+    // Refresh some stars
+    var num = 1;
+    if (level > 20)
+        num = 2;
+    else if (level > 10)
+    {
+        if (Math.random() < (level - 10) * 0.1)
+            num = 2;
+    }
+
+    for (var i = 0; i< num; i++)
+    {
+        var star = new Star(level, i);
+        add_object(star);
+    }
 }
 
 function play() 

@@ -33,11 +33,11 @@ class LoginWindow
             console.log(user_cookie);
             user_info = JSON.parse(user_cookie); 
             name = user_info.name;
-            var text = createText('欢迎回来，{0}'.format(name), 
-                    30, '0xe4e4e4', canvas_width/2, canvas_height * 0.05);
-            text.anchor.set(0.5);
-            window.addChild(text);
         }
+        var text = createText('欢迎回来，{0}'.format(name), 
+                30, '0xe4e4e4', canvas_width/2, canvas_height * 0.05);
+        text.anchor.set(0.5);
+        window.addChild(text);
 
         var btn_xoff = canvas_width * 0.22;
         var btn_yoff = canvas_height * 0.27;

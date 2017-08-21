@@ -118,11 +118,11 @@ var ratio = size[0] / size[1];
 var born_pos = [canvas_width/2, canvas_height/1.5];
 
 // Game properties
-var jmp_horz_speed = 150;
-var jmp_vert_speed = 550;
-var gravity = 1000;
+var jmp_horz_speed = 165;
+var jmp_vert_speed = 600;
+var gravity = 1300;
 var level_height = 600;
-var gap_size_range = [canvas_width * 0.45, canvas_width * 0.55];
+var gap_size_range = [canvas_width * 0.4, canvas_width * 0.55];
 var gap_pos_range = canvas_width * 0.185;
 var box_pos_info = [
     [canvas_width * 0.185, canvas_height * 0.42, canvas_height * 0.026],
@@ -157,7 +157,7 @@ var eat_stars = [];
 var remove_obs = [];
 
 // Security
-var need_extra_report_score = 40;
+var need_extra_report_score = 50;
 var op_list = [];
 
 // Time
@@ -358,8 +358,10 @@ class DeathBox
 {
     constructor(level, idx)
     {
-        this.level = level;     
-        this.sprite = new Sprite(resources[box_image].texture);
+        this.level = level;
+        var box_num = 2;
+        var box_tex = box_images[Math.floor(Math.random() * box_num)];
+        this.sprite = new Sprite(resources[box_tex].texture);
         this.sprite.anchor.set(0.5);
         this.x = canvas_width / 2 + rand1() * box_pos_info[idx][0];
         this.y = level * level_height + box_pos_info[idx][1] + rand1() * box_pos_info[idx][2];
@@ -684,7 +686,6 @@ function update_scene_obs()
 
     if (remove_obs.length > 0)
     {
-        console.log("remove", remove_obs.length);
         for (var i = 0; i < remove_obs.length; i++)
             remove_object(remove_obs[i]);
         remove_obs.length = 0;
@@ -720,12 +721,11 @@ function update_player_death()
             return;
         }
 
-        cat.x += cat.vx * delta_time * 0.003;
-        cat.y += cat.vy * delta_time * 0.003;
+        cat.x += cat.vx * delta_time * 0.002;
+        cat.y += cat.vy * delta_time * 0.002;
         cat.rotation += 200 * delta_time;
 
         var die_time = Date.now() - cat.die_time;
-
         if (die_time < 100)
             stage.scale.set(1.01 + cat.shake * 0.01);
         else
@@ -794,8 +794,8 @@ function build_brick(level)
 {
     // Change gap size by level
     var gap_size = gap_size_range[0] + (gap_size_range[1] - gap_size_range[0]) * Math.random();
-    var max_change_scale = 0.25;
-    var size_scale = 1 - Math.min(max_change_scale * level / 20, max_change_scale);
+    var max_change_scale = 0.33;
+    var size_scale = 1 - Math.min(max_change_scale * level / 30, max_change_scale);
     gap_size *= size_scale;
     var gap_pos = rand1() * gap_pos_range;
     var brick_level = new BrickLevel(level, gap_size, gap_pos);

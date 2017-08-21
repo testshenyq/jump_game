@@ -509,7 +509,7 @@ function notify_game_over()
     console.log("Game over!");
     var score = level_score + star_score;
 
-    if (score > user_max_score && user_info.id)
+    if (score > user_info.max_score && user_info.id)
     {
         var extra_info = null;
 
@@ -522,7 +522,7 @@ function notify_game_over()
 
             if (result)
                 // 更新最高分
-                user_max_score = score;
+                user_info.max_score = score;
             else
                 message_box("上报最新分数失败");
         });

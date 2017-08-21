@@ -72,11 +72,12 @@ class LoginWindow
         text.anchor.set(0.5);
         window.addChild(text);
 
-        /*
-        this.create_simple_button("  排行榜 ", 100, canvas_height / 2, function() {
-            console.log("排行榜");
-            show_rank_window();
-        });*/
+        this.create_simple_button("  排行榜 ", canvas_width / 2, canvas_height / 2 - 300, 
+                function() {
+                    console.log("排行榜");
+                    show_rank_window();
+                }
+        );
 
         this.create_simple_button("学生登录", canvas_width / 2, canvas_height / 2 - 100, 
                 function() {

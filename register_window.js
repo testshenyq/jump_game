@@ -66,7 +66,7 @@ function create_text_box(info, x, y)
 
 function save_user_info()
 {
-    console.log("save", JSON.stringify(user_info));
+    console.log("save");
     setCookie("userinfo", JSON.stringify(user_info), 30);
 }
 
@@ -94,7 +94,13 @@ class RegisterWindow
 {
     constructor(x, y)
     {
-        input_user_info = shallow_clone(user_info);
+        // Compose the input user info
+        input_user_info = {
+            name    : user_info.name,
+            school  : user_info.school,
+            student_id : user_info.student_id,
+            phone   : user_info.phone,
+        };
 
         // Create rank window sprite
         var window = new Container();
@@ -152,18 +158,16 @@ class RegisterWindow
 
                 // Clear the user_info.id and try to login
                 input_user_info.id = null;
-                student_register(input_user_info, function(success, id) {
+                student_register(input_user_info, function(success, info) {
                     if (!success)
                     {
-                        alert("学生登陆失败：" + id);
+                        alert("学生登陆失败：" + info);
                         return;
                     }
                     
                     // Set user id & save user info
-                    user_info = shallow_clone(input_user_info);
-                    user_info.id = id;
+                    user_info = info;
                     save_user_info();
-                    console.log(user_info);
                     stage.removeChild(window);
                 });
             }

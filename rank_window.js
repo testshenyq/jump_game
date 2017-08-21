@@ -107,7 +107,7 @@ class RankWindow
         var rank_window = this;
         var myinfo = createText('', 40, '0xFFFFFF', 100, 200);
         this.window.addChild(myinfo);
-        var login_as_user = !user_info.name || uesr_info.name.length == 0;
+        var login_as_user = user_info.name != null || user_info.name.length == 0;
 
         if (!login_as_user)
             // Show tip
@@ -129,6 +129,9 @@ class RankWindow
                 {
                     my_rank = i+1;
                     my_score = rank_info[2];
+
+                    // Update my max score here
+                    user_info.max_score = my_score;
                 }
                 rank_window.addItem(i+1, rank_info[1], rank_info[2], is_me);
             }
@@ -146,7 +149,6 @@ class RankWindow
 
     addItem(rank, name, score, is_me)
     {
-        console.log("add item", name, score);
         var rank_item = new RankItem();
         rank_item.setRank(rank, name, score, is_me);
         this.scroll_window.addItem(rank_item.sprite, null);

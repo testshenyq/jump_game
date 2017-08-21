@@ -66,6 +66,21 @@ function disable_global_input()
     global_input.style.visibility = 'hidden';
 }
 
+function create_button(parent, texture, scale, x, y, callback)
+{
+    var btn = new Sprite(resources[texture].texture);
+    btn.scale.x = scale;
+    btn.scale.y = scale;
+    btn.interactive = true;
+    btn.on('pointerdown', callback);
+    btn.anchor.set(0.5);
+    btn.pivot.set(0.5);
+    btn.x = x;
+    btn.y = y;
+    parent.addChild(btn);
+    return btn;
+} 
+
 function createText(text, size, color, x, y, extra_info = null)
 {
     var textStyle = {

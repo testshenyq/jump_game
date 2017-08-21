@@ -30,16 +30,20 @@ function student_register(uinfo, callback)
 
 /*
 发送：当前玩家id(可能为null，此时为游客）
-返回：排行列表 [ [ (string)玩家id, (string)玩家姓名, (int)玩家分数 ], ... ]
+返回：[(int)当前玩家排名, (int)当前玩家分数，(array)排行列表]
+排行列表格式：[ [ (string)玩家id, (string)玩家姓名, (int)玩家分数 ], ... ]
+当前玩家排名为0时说明未入榜
 */
 // 向后端请求排行数据，回调结果
-function query_rank_info(callback)
+function query_rank_info(id, callback)
 {
-    var id = user_info.id;
     console.log("query rank info", id);
 
     // TODO:
     callback(
+        2,      // rank
+        100,    // score
+
         // rank list
         [
             // id, name, score

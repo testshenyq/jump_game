@@ -24,8 +24,12 @@ class ScrollWindow
         
         sprite.interactive = true;
 
+        // Resize the scroll window bg
         resize_sprite(sprite, width, height);
-        resize_sprite(mask_sprite, width, height);
+
+        // Resize & move the mask sprite (ugly)
+        resize_sprite(mask_sprite, width-5, height-5);
+        mask_sprite.y += 3;
 
         sprite
             .on('pointerdown', this.onDragStart)
@@ -39,8 +43,8 @@ class ScrollWindow
 
         sprite.scroll_wnd = this;
         this.items = [];
-        this.xoff = 20;
-        this.yoff = 50;
+        this.xoff = 0;
+        this.yoff = 10;
         this.heightInterval = 10;
         this.draging = false;
         this.last_pos = 0;

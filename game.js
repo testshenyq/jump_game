@@ -10,24 +10,66 @@ var Container = PIXI.Container,
     Sprite = PIXI.Sprite,
     Graphics = PIXI.Graphics;
 
-var player_image = "images/players/1.png";
+var player_image = "images/players/player.png";
 var bg_image = "images/bg_sky.jpg"
 var login_bg_image = "images/login_bg.jpg"
 var start_bg_image = "images/start_bg.jpg"
 var button_image = "images/button.png"
-var rank_bg_image = "images/rank_bg.png"
-var rank_mask_image = "images/rank_bg_mask.png"
-var rank_window_image = "images/rank_window.png"
-var rank_item_image = "images/rank_item.jpg"
+var scroll_bg_image = "images/transparent.png"
+var rank_mask_image = "images/white.jpg"
+var rank_window_image = "images/rank_wnd.jpg"
+var rank_item_image = "images/rank_item.png"
 var btn_ok_image = "images/btn_ok.png"
 var btn_return_image = "images/btn_return.png"
-var btn_retry_image = "images/btn_retry.jpg"
-var btn_rank_image = "images/btn_rank.jpg"
-var brick_line_image = "images/brick_line.jpg"
-var box_image = "images/death_box.png"
-var star_image = "images/star.png"
+var btn_retry_image = "images/btn_retry.png"
+var brick_line_image = "images/brick_level.jpg"
+var box_image = "images/box1.png"
+var box2_image = "images/box2.png"
+var star_image = "images/star2.png"
 var loading_image = "images/black_bg.jpg"
 var gift_bg_image = "images/gift_item_bg.png"
+var game_over_image = "images/game_over.png"
+var alpha_bg_image = "images/alpha_bg.png"
+var register_wnd_image = "images/register_wnd.jpg"
+var gift_wnd_image = "images/gift_wnd.jpg"
+
+var btn_enter_game_image = "images/btn_enter_game.png"
+var btn_gift_image = "images/btn_gift.png"
+var btn_rank_image = "images/btn_rank.png"
+var btn_student_image = "images/btn_student.png"
+
+var res_list = [
+    player_image,
+    bg_image,
+    login_bg_image,
+    start_bg_image,
+    button_image,
+    scroll_bg_image,
+    rank_item_image,
+    rank_mask_image,
+    rank_window_image,
+    btn_ok_image,
+    btn_return_image,
+    btn_retry_image,
+    brick_line_image,
+    box_image,
+    box2_image,
+    star_image,
+    gift_bg_image,
+    game_over_image,
+    alpha_bg_image,
+    register_wnd_image,
+    gift_wnd_image,
+    btn_enter_game_image,
+    btn_gift_image,
+    btn_rank_image,
+    btn_student_image,
+];
+
+var box_images = [
+    box_image,
+    box2_image,
+];
 
 loader.add(loading_image)
     .load(start_loading);
@@ -46,29 +88,10 @@ function start_loading()
 
     loading_loop();
 
+    // Load all resource in res list
     loader.progress = 0;
-    loader
-      .add(player_image)
-      .add(bg_image)
-      .add(login_bg_image)
-      .add(start_bg_image)
-      .add(button_image)
-      .add(rank_bg_image)
-      .add(rank_item_image)
-      .add(rank_mask_image)
-      .add(rank_window_image)
-      .add(btn_ok_image)
-      .add(btn_return_image)
-      .add(btn_retry_image)
-      .add(btn_rank_image)
-      .add(brick_line_image)
-      .add(box_image)
-      .add(star_image)
-      .add(gift_bg_image)
-
-    var gift_num = 5;
-    for (var i = 1; i <= gift_num; i++)
-        loader.add("images/gift{0}.png".format(i));
+    for (var i = 0; i < res_list.length; i++)
+        loader.add(res_list[i]);
 
     loader.on('progress', on_loading_progress)
     loader.load(startup)
@@ -95,14 +118,14 @@ var ratio = size[0] / size[1];
 var born_pos = [canvas_width/2, canvas_height/1.5];
 
 // Game properties
-var jmp_horz_speed = 6;
-var jmp_vert_speed = 17;
-var gravity = 30;
-var level_height = 1200;
-var gap_size_range = [500,600];
-var gap_pos_range = 200;
-var box_pos_info = [200, 800, 50];
-var star_pos_info = [150, 500, 100];
+var jmp_horz_speed = 150;
+var jmp_vert_speed = 550;
+var gravity = 1000;
+var level_height = 600;
+var gap_size_range = [canvas_width * 0.5, canvas_width * 0.6];
+var gap_pos_range = canvas_width * 0.185;
+var box_pos_info = [canvas_width * 0.185, canvas_height * 0.42, canvas_height * 0.026];
+var star_pos_info = [canvas_width * 0.14, canvas_height * 0.252, canvas_height * 0.052];
 var prepare_level = canvas_height / level_height;
 var camera_focus_pos = canvas_height / 2;
 var camera_pos = 0;
@@ -149,15 +172,6 @@ resize();
 var global_input = document.getElementById("global_input");
 global_input.tabindex = -1;
 
-/*
-global_input.style.position = 'absolute';
-input.style.opacity = 100;
-input.style.left = '0px';
-input.style.bottom = '0px';
-input.style.right = '100px';
-input.style.top = '-100px';
-input.style.zIndex = 10;
-*/
 document.body.appendChild(global_input);
 
 function resize() {
@@ -202,6 +216,23 @@ function play_eat_star(star)
     eat_stars.push(star);
 }
 
+// Update collide dir
+function calc_collide_dir(x, y, xmin, xmax, ymin, ymax)
+{
+    var dx = 1, dy = 1;
+    var min = 100;
+    var left = x - xmin;
+    var threshold = 24;
+    if (x - xmin < threshold || xmax - x < threshold)
+        dx = -1;
+    
+    if (y - ymin < threshold || ymax - y < threshold)
+        dy = -1;
+        
+    return [dx, dy];
+}
+
+// Check collide by sprite
 function is_collide(cx, cy, sprite)
 {
     var w = sprite.width;
@@ -212,7 +243,12 @@ function is_collide(cx, cy, sprite)
     var ymax = cy + sprite.y + h + collide_radius;
     var sx = cat.x;
     var sy = cat.y;
-    return sx > xmin && sx < xmax && sy > ymin && sy < ymax;
+    if (sx > xmin && sx < xmax && sy > ymin && sy < ymax)
+    {
+        cat.collide_dir = calc_collide_dir(sx, sy, xmin, xmax, ymin, ymax);
+        return true;
+    }
+    return false;
 }
 
 function add_object(ob)
@@ -443,6 +479,23 @@ function show_login_window()
     window.attachTo(stage);
 }
 
+function show_gift_window()
+{
+    // Create bg sprite
+    var bg = new Sprite(resources[gift_wnd_image].texture);
+    bg.interactive = true;
+    fill_sprite(bg);
+    stage.addChild(bg);
+
+    // Create button
+    create_button(bg, btn_return_image, 1,
+        canvas_width / 2, canvas_height * 0.9,
+        function() {
+            stage.removeChild(bg);
+        }
+    );
+}
+
 function show_start_window()
 {
     game_state = "start";
@@ -458,33 +511,42 @@ function show_start_window()
 
 function show_rank_window()
 {
-    var rank_wnd = new RankWindow(canvas_width / 2, 200);
+    var rank_wnd = new RankWindow(canvas_width / 2, 0);
     rank_wnd.attachTo(stage);
 }
 
 function show_register_window()
 {
-    var reg_wnd = new RegisterWindow(canvas_width / 2, 200);
+    var reg_wnd = new RegisterWindow(canvas_width / 2, 0);
     reg_wnd.attachTo(stage);
 }
 
 function show_game_over_window()
 {
     game_state = "game_over";
-    clear_scene();
+
+    var bg = new Sprite(resources[alpha_bg_image].texture);
+    bg.interactive = true;
+    stage.addChild(bg);
+    fill_sprite(bg);
+
+    var game_over = new Sprite(resources[game_over_image].texture);
+    game_over.anchor.set(0.5);
+    game_over.x = canvas_width / 2;
+    game_over.y = canvas_height * 0.3;
+    stage.addChild(game_over);
+
     var btn_retry = createButton(
-            btn_retry_image, canvas_width / 2, canvas_height / 2 - 100, 
+            btn_retry_image, canvas_width / 2, canvas_height * (0.6 - 0.05), 
             function() {
                 show_start_window();
             });
-    btn_retry.scale.set(2);
 
     var btn_rank = createButton(
-            btn_rank_image, canvas_width / 2, canvas_height / 2 + 100, 
+            btn_rank_image, canvas_width / 2, canvas_height * (0.6 + 0.05), 
             function() {
                 show_rank_window();        
             });
-    btn_rank.scale.set(2);
     stage.addChild(btn_retry);
     stage.addChild(btn_rank);
 }
@@ -498,8 +560,13 @@ function notify_add_score()
 function player_dead()
 {
     game_state = "dead";
+
+    // Change velocity
+    cat.vx = cat.vx * cat.collide_dir[0];
+    cat.vy = cat.vy * cat.collide_dir[1];
+
+    // Record die time
     cat.die_time = Date.now();
-    cat.die_dir = cat.x < canvas_width / 2 ? 1 : -1;
     cat.shake = 1;
 }
 
@@ -605,11 +672,8 @@ function update_player_death()
 {
     if (game_state == "dead")
     {
-        cat.vx = 2 * cat.die_dir;
-        cat.vy = 2;
-
-        cat.x += cat.vx * delta_time;
-        cat.y += cat.vy * delta_time;
+        cat.x += cat.vx * delta_time * 0.003;
+        cat.y += cat.vy * delta_time * 0.003;
         cat.rotation += 200 * delta_time;
 
         var die_time = Date.now() - cat.die_time;
@@ -632,8 +696,8 @@ function update_player()
     // Update gravity & update player position
     cat.vy += gravity * delta_time * 0.001;
 
-    px += cat.vx;
-    py -= Math.floor(cat.vy);
+    px += Math.floor(cat.vx * delta_time * 0.001);
+    py -= Math.floor(cat.vy * delta_time * 0.001);
 
     px = Math.max(player_size[0] / 2, px);
     px = Math.min(canvas_width - player_size[0] / 2, px);

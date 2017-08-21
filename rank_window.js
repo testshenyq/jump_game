@@ -9,28 +9,23 @@ var Container = PIXI.Container,
     Sprite = PIXI.Sprite,
     Graphics = PIXI.Graphics;
 
-var rank_window_image = "images/rank_window.png"
-var rank_bg_image = "images/rank_bg.png"
-var rank_mask_image = "images/rank_bg_mask.png"
-var rank_item_image = "images/rank_item.jpg"
-var btn_return_image = "images/btn_return.png"
-var scroll_size = [850, 850];
-
+var scroll_size = [566, 454];
 class RankItem
 {
     constructor()
     {
         // Item sprite
         this.sprite = new Sprite(resources[rank_item_image].texture);
+        this.sprite.scale.set(1);
         this.sprite.anchor.set(0,0);
     }
 
     setRank(rank, name, score, is_me)
     {
-        var texty = 10;
+        var texty = 20;
         var rankx = 20;
-        var namex = 160;
-        var scorex = 700; 
+        var namex = 100;
+        var scorex = 520; 
 
         // Rank
         var textStyle = {
@@ -77,7 +72,7 @@ class RankWindow
         stage.addChild(window);
 
         // Create scroll window
-        var scroll_wnd_sprite = new Sprite(resources[rank_bg_image].texture);
+        var scroll_wnd_sprite = new Sprite(resources[scroll_bg_image].texture);
         var mask_sprite = new Sprite(resources[rank_mask_image].texture);
         this.scroll_window = new ScrollWindow(
                 scroll_wnd_sprite, 
@@ -85,60 +80,65 @@ class RankWindow
                 window.width / 2 - scroll_size[0] / 2, 300, 
                 scroll_size[0], scroll_size[1]);
 
-        this.scroll_window.setItemInfo(40, 10);
+        this.scroll_window.setItemInfo(10, 10);
         window.addChild(this.scroll_window.window);
 
         // Init my info
         this.initMyInfo();
 
         // Create buttons
-        var ret_btn = createButton(btn_return_image, window.width / 2, window.height - 150,
+        var btn_off = canvas_height * 0.12;
+        var ret_btn = createButton(btn_return_image, window.width / 2, window.height - btn_off,
             function(){
                 stage.removeChild(window);
                 console.log("返回...");
             }
         );
-        ret_btn.scale.set(1.5);
         this.window.addChild(ret_btn);
     }
 
     initMyInfo()
     { 
         var rank_window = this;
-        var myinfo = createText('', 40, '0xFFFFFF', 100, 200);
-        this.window.addChild(myinfo);
-        var login_as_user = user_info.name != null || user_info.name.length == 0;
+        var font_size = 25;
+        var score_x = canvas_width * 0.4;
+        var rank_x = canvas_width * 0.77;
+        var label_y = canvas_height * 0.26;
 
-        if (!login_as_user)
+        var label_score = createText('', font_size, '0x030303', score_x, label_y);
+        var label_rank = createText('', font_size, '0x030303', rank_x, label_y);
+
+        this.window.addChild(label_score);
+        this.window.addChild(label_rank);
+
+        // Get  current user id
+        var id = user_info.id;
+
+        if (!id)
             // Show tip
-            myinfo.text = '未以学生身份登录，无法参与排行';
+            label_score.text = '游客无法参与';
         else
-            myinfo.text = "你的最高得分 : 正在查询"
+            label_score.text = "正在查询"
 
         // Query rank info
-        query_rank_info(function(rank_list) { 
-            var my_rank = '未入榜';
-            var my_score = 0;
+        query_rank_info(id, function(my_rank, my_score, rank_list) { 
+            if (my_rank <= 0)
+                my_rank = "未上榜";
 
             // Fill rank list
             for (var i = 0; i < rank_list.length; i++)
             {
                 var rank_info = rank_list[i];
                 var is_me = user_info.id == rank_info[0];
-                if (is_me)
-                {
-                    my_rank = i+1;
-                    my_score = rank_info[2];
-
-                    // Update my max score here
-                    user_info.max_score = my_score;
-                }
                 rank_window.addItem(i+1, rank_info[1], rank_info[2], is_me);
             }
             
-            if (login_as_user)
+            if (id)
+            {
                 // Update my info
-                myinfo.text = '你的最高得分：{0}  排名：{1}'.format(my_score, my_rank);
+                label_score.text = my_score.toString();
+                label_rank.text = my_rank.toString();
+            }
         });
     }
 

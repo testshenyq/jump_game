@@ -12,35 +12,6 @@ var Container = PIXI.Container,
 
 class LoginWindow
 {
-    create_simple_button(name, x, y, func)
-    {
-        var btn_scale = 5;
-
-        var btn = new Sprite(resources[button_image].texture);
-        btn.scale.x = btn_scale;
-        btn.scale.y = btn_scale;
-        btn.interactive = true;
-        btn.on('pointerdown', func);
-        btn.anchor.set(0.5);
-        btn.pivot.set(0.5);
-
-        var textStyle = {
-            fontSize : 36,
-            fill : '#ffffff',
-        };
-        var basicText = new PIXI.Text(name, textStyle);
-        basicText.x = x;
-        basicText.y = y;
-        basicText.anchor.set(0.5);
-        basicText.pivot.set(0.5);
-
-        btn.x = x;
-        btn.y = y;
-        this.window.addChild(btn);
-        this.window.addChild(basicText);
-        return btn;
-    }
-
     constructor()
     {
         // Create rank window sprite
@@ -63,15 +34,43 @@ class LoginWindow
             user_info = JSON.parse(user_cookie); 
             name = user_info.name;
             var text = createText('欢迎回来，{0}'.format(name), 
-                    50, '0xe4e4e4', canvas_width/2, 100);
+                    30, '0xe4e4e4', canvas_width/2, canvas_height * 0.05);
             text.anchor.set(0.5);
             window.addChild(text);
         }
 
-        var text = createText('寻找有趣的灵魂', 60, '0xffffff', canvas_width / 2, 500);
-        text.anchor.set(0.5);
-        window.addChild(text);
+        var btn_xoff = canvas_width * 0.22;
+        var btn_yoff = canvas_height * 0.27;
+        var btn_interval = canvas_height * 0.06;
+        create_button(window, btn_student_image, 1, 
+                canvas_width / 2 - btn_xoff, canvas_height - btn_yoff - btn_interval,
+                function() {
+                    console.log("学生登陆");
+                    show_register_window();
+                });
 
+        create_button(window, btn_enter_game_image, 1, 
+                canvas_width / 2 + btn_xoff, canvas_height - btn_yoff - btn_interval,
+                function() {
+                    console.log("进入游戏");
+                    show_start_window();
+                });
+
+        create_button(window, btn_gift_image, 1,
+                canvas_width / 2 - btn_xoff, canvas_height - btn_yoff + btn_interval,
+                function() {
+                    console.log("万元大奖");
+                    show_gift_window();
+                });
+
+        create_button(window, btn_rank_image, 1,
+                canvas_width / 2 + btn_xoff, canvas_height - btn_yoff + btn_interval,
+                function() {
+                    console.log("排行榜");
+                    show_rank_window();
+                });
+
+        /*
         this.create_simple_button("  排行榜 ", canvas_width / 2, canvas_height / 2 - 300, 
                 function() {
                     console.log("排行榜");
@@ -92,7 +91,9 @@ class LoginWindow
                     show_start_window();
                 }
         );
+        */
 
+        /*
         text = createText('(注意：填写实名信息并以学生登陆才可参与排行抽奖)', 
                 26, '0x444444', canvas_width / 2, canvas_height - 180);
         window.addChild(text);
@@ -102,7 +103,9 @@ class LoginWindow
                 40, '0x444444', canvas_width / 2, canvas_height / 2 + 400);
         text.anchor.set(0.5);
         window.addChild(text);
+        */
 
+        /*
         var gift_interval = 50;
         var gift_x = 180;
         var height_off = -300;
@@ -111,7 +114,7 @@ class LoginWindow
             var gift_bg = new Sprite(resources[gift_bg_image].texture);
             gift_bg.anchor.set(0.5);
             gift_bg.pivot.set(0.5);
-            gift_bg.scale.set(2.0);
+            gift_bg.scale.set(1.2);
             var gift_sprite = new Sprite(resources["images/gift{0}.png".format(i+1)].texture);
             gift_sprite.anchor.set(0.5);
             gift_bg.x = gift_x + i * (gift_sprite.width + gift_interval);
@@ -121,7 +124,7 @@ class LoginWindow
             gift_sprite.scale.set(0.8);
             window.addChild(gift_bg);
             window.addChild(gift_sprite);
-        }    
+        }*/   
     }
 
     attachTo(parent)

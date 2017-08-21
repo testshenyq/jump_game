@@ -27,15 +27,16 @@ var box_image = "images/box1.png"
 var box2_image = "images/box2.png"
 var star_image = "images/star2.png"
 var loading_image = "images/black_bg.jpg"
-var gift_bg_image = "images/gift_item_bg.png"
 var game_over_image = "images/game_over.png"
 var alpha_bg_image = "images/alpha_bg.png"
 var register_wnd_image = "images/register_wnd.jpg"
 var gift_wnd_image = "images/gift_wnd.jpg"
+var time_image = "images/count_down.png"
 
 var btn_enter_game_image = "images/btn_enter_game.png"
 var btn_gift_image = "images/btn_gift.png"
 var btn_rank_image = "images/btn_rank.png"
+var btn_menu_image = "images/btn_main_menu.png"
 var btn_student_image = "images/btn_student.png"
 
 var res_list = [
@@ -55,14 +56,15 @@ var res_list = [
     box_image,
     box2_image,
     star_image,
-    gift_bg_image,
     game_over_image,
     alpha_bg_image,
     register_wnd_image,
     gift_wnd_image,
+    time_image,
     btn_enter_game_image,
     btn_gift_image,
     btn_rank_image,
+    btn_menu_image,
     btn_student_image,
 ];
 
@@ -138,6 +140,10 @@ var cur_level = 0;
 var level_score = 0;
 var star_score = 0;
 var score_label;
+var time_label;
+var time_sprite;
+var count_down;
+var total_time = 5;
 var game_state = "login";
 var bricks;
 var boxes;
@@ -147,7 +153,7 @@ var eat_stars = [];
 var remove_obs = [];
 
 // Security
-var need_report_score = 20;
+var need_extra_report_score = 40;
 var op_list = [];
 
 // Time
@@ -334,9 +340,11 @@ class Star
 
          if (is_collide(-this.sprite.width/2, -this.sprite.height/2, this.sprite))
          {
-            notify_add_score();
-            add_to_remove_list(this, false);
-            play_eat_star(this.get_render_ob()); 
+              cat.collide_dir[0] = 0;
+              cat.collide_dir[1] = 0;
+              notify_add_score();
+              add_to_remove_list(this, false);
+              play_eat_star(this.get_render_ob()); 
          }
     }
 }
@@ -392,6 +400,7 @@ function start_game()
     remove_obs = [];
     eat_stars = [];
     start_time = Date.now();
+    count_down = total_time;
     Math.seedrandom(start_time.toString());
 
     // Create background
@@ -404,6 +413,7 @@ function start_game()
     cat = new Sprite(resources[player_image].texture);
     cat.anchor.set(0.5);
     cat.pivot.set(0.5);
+    cat.collide_dir = [0,0];
     player_size = [cat.width, cat.height];
     player_radius = cat.width / 2;
     collide_radius = player_radius * collide_scale;
@@ -413,10 +423,20 @@ function start_game()
     cat.vy = 0;
     stage.addChild(cat);
 
-    // Create score
-    score_label = createText("0", 60, '0x000000', canvas_width - 30, 30);
-    score_label.anchor.set(1, 0);
+    // Create score label
+    score_label = createText("0", 65, '0x080808', canvas_width / 2, 60);
+    score_label.anchor.set(0.5);
     stage.addChild(score_label);
+
+    // Create count down label
+    time_sprite = new Sprite(resources[time_image].texture);
+    time_sprite.x = 30;
+    time_sprite.y = 40;
+    time_sprite.anchor.set(0.5);
+    stage.addChild(time_sprite);
+    time_label = createText(count_down.toString(), 40, '0x080808', 60, 40);
+    time_label.anchor.set(0, 0.5);
+    stage.addChild(time_label);
 
     // Build the first level
     build_scene(1);
@@ -537,18 +557,26 @@ function show_game_over_window()
     stage.addChild(game_over);
 
     var btn_retry = createButton(
-            btn_retry_image, canvas_width / 2, canvas_height * (0.6 - 0.05), 
+            btn_retry_image, canvas_width / 2, canvas_height * (0.6 - 0.1), 
             function() {
                 show_start_window();
             });
 
     var btn_rank = createButton(
-            btn_rank_image, canvas_width / 2, canvas_height * (0.6 + 0.05), 
+            btn_rank_image, canvas_width / 2, canvas_height * (0.6), 
             function() {
                 show_rank_window();        
             });
+
+    var btn_menu = createButton(
+            btn_menu_image, canvas_width / 2, canvas_height * (0.6 + 0.1), 
+            function() {
+                show_login_window();
+            });
+
     stage.addChild(btn_retry);
     stage.addChild(btn_rank);
+    stage.addChild(btn_menu);
 }
 
 function notify_add_score()
@@ -560,6 +588,7 @@ function notify_add_score()
 function player_dead()
 {
     game_state = "dead";
+    console.log("collide dir = ", cat.collide_dir);
 
     // Change velocity
     cat.vx = cat.vx * cat.collide_dir[0];
@@ -567,7 +596,9 @@ function player_dead()
 
     // Record die time
     cat.die_time = Date.now();
-    cat.shake = 1;
+
+    if (count_down > 0)
+        cat.shake = 1;
 }
 
 function notify_game_over()
@@ -581,7 +612,7 @@ function notify_game_over()
         var extra_info = null;
 
         // Need to report op list when score is high enough
-        if (score > need_report_score)
+        if (score > need_extra_report_score)
             extra_info = [cur_level, start_time, op_list];
 
         // Report score info to server
@@ -596,10 +627,17 @@ function notify_game_over()
     }
 }
 
-// Update score
+// Update time label
+function update_time(cd)
+{
+    count_down = cd;
+    time_label.text = count_down.toString();
+}
+
+// Update score label
 function update_score(force)
 {
-    var level_height_offset = -canvas_height / 2 + 200;
+    var level_height_offset = -canvas_height / 2;
     var new_score = Math.floor((camera_pos + level_height_offset) / level_height);
     if (new_score > level_score || force)
     {
@@ -672,6 +710,12 @@ function update_player_death()
 {
     if (game_state == "dead")
     {
+        if (count_down == 0)
+        {
+            show_game_over_window();
+            return;
+        }
+
         cat.x += cat.vx * delta_time * 0.003;
         cat.y += cat.vy * delta_time * 0.003;
         cat.rotation += 200 * delta_time;
@@ -721,11 +765,18 @@ function update_player()
         notify_game_over();
 }
 
-// Bring some sprites to topmost
+function bring_object_topmost(ob)
+{
+    stage.removeChild(ob);
+    stage.addChild(ob);
+}
+
+// Bring some objects to topmost
 function bring_to_topmost()
 {
-    stage.removeChild(score_label);
-    stage.addChild(score_label);
+    bring_object_topmost(score_label);
+    bring_object_topmost(time_label);
+    bring_object_topmost(time_sprite);
 }
 
 function build_scene(level)
@@ -762,9 +813,9 @@ function build_star(level)
 
 function play() 
 {
-    var curTime = Date.now();
-    delta_time = curTime - last_time;
-    last_time = curTime;
+    var cur_time = Date.now();
+    delta_time = cur_time - last_time;
+    last_time = cur_time;
 
     update_player_death();
     update_stars();
@@ -772,8 +823,15 @@ function play()
     if (game_state != "play")
         return;
 
+    var cd = total_time - Math.floor((cur_time - start_time) / 1000);
+    if (cd != count_down)
+        update_time(cd);
+
     update_player();
     update_scene_obs();
+
+    if (cd <= 0)
+        notify_game_over();
 
     /*
     // Remove the obs need to be removed

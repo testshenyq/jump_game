@@ -40,7 +40,7 @@ class ScrollWindow
         sprite.scroll_wnd = this;
         this.items = [];
         this.xoff = 20;
-        this.yoff = 20;
+        this.yoff = 50;
         this.heightInterval = 10;
         this.draging = false;
         this.last_pos = 0;
@@ -71,7 +71,7 @@ class ScrollWindow
         item.y = this.items.length * height + this.yoff;
         this.container.addChild(item);
         this.items.push(item);
-        this.min_pos = Math.min(0, this.height - (this.items.length * height + this.yoff));
+        this.min_pos = Math.min(0, this.height - (this.items.length * height + this.yoff + 50));
     }
 
     onDragStart(e)

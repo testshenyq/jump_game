@@ -124,7 +124,7 @@ var eat_stars = [];
 var remove_obs = [];
 
 // Security
-var report_scroe = 20;
+var need_report_score = 20;
 var op_list = [];
 
 // Time
@@ -459,12 +459,6 @@ function show_start_window()
 function show_rank_window()
 {
     var rank_wnd = new RankWindow(canvas_width / 2, 200);
-    rank_wnd.addItem(1, "shenyq", 103, true);
-    rank_wnd.addItem(2, "liujj", 103, false);
-    rank_wnd.addItem(3, "huangw", 103, false);
-    rank_wnd.addItem(4, "xxx", 25, false);
-    for (var i = 5; i <= 20; i++)
-        rank_wnd.addItem(i, "sdf", i, false);
     rank_wnd.attachTo(stage);
 }
 
@@ -515,14 +509,23 @@ function notify_game_over()
     console.log("Game over!");
     var score = level_score + star_score;
 
-    if (score > user_max_score)
+    if (score > user_max_score && user_info.id)
     {
-        // TODO: Connect to server and report the result
-        if (score > report_scroe)
-        {
-            // TODO: Report some info for security
-            var report_info = [score, cur_level, start_time, op_list];
-        }
+        var extra_info = null;
+
+        // Need to report op list when score is high enough
+        if (score > need_report_score)
+            extra_info = [cur_level, start_time, op_list];
+
+        // Report score info to server
+        report_score(user_info.id, score, extra_info, function(result, reason) {
+
+            if (result)
+                // 更新最高分
+                user_max_score = score;
+            else
+                message_box("上报最新分数失败");
+        });
     }
 }
 

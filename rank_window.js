@@ -103,11 +103,40 @@ class RankWindow
     }
 
     initMyInfo()
-    {
-        var infoText = "你的最高得分 : {0}   排名 : {1}"
-            .format(user_max_score, user_rank);
-        var myinfo = createText(infoText, 40, '0xFFFFFF', 100, 200);
+    { 
+        var rank_window = this;
+        var myinfo = createText('', 40, '0xFFFFFF', 100, 200);
         this.window.addChild(myinfo);
+        var login_as_user = !user_info.name || uesr_info.name.length == 0;
+
+        if (!login_as_user)
+            // Show tip
+            myinfo.text = '未以学生身份登录，无法参与排行';
+        else
+            myinfo.text = "你的最高得分 : 正在查询"
+
+        // Query rank info
+        query_rank_info(function(rank_list) { 
+            var my_rank = '未入榜';
+            var my_score = 0;
+
+            // Fill rank list
+            for (var i = 0; i < rank_list.length; i++)
+            {
+                var rank_info = rank_list[i];
+                var is_me = user_info.id == rank_info[0];
+                if (is_me)
+                {
+                    my_rank = i+1;
+                    my_score = rank_info[2];
+                }
+                rank_window.addItem(i+1, rank_info[1], rank_info[2], is_me);
+            }
+            
+            if (login_as_user)
+                // Update my info
+                myinfo.text = '你的最高得分：{0}  排名：{1}'.format(my_score, my_rank);
+        });
     }
 
     attachTo(parent)
@@ -117,6 +146,7 @@ class RankWindow
 
     addItem(rank, name, score, is_me)
     {
+        console.log("add item", name, score);
         var rank_item = new RankItem();
         rank_item.setRank(rank, name, score, is_me);
         this.scroll_window.addItem(rank_item.sprite, null);

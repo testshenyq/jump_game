@@ -19,13 +19,16 @@ var editing_input;
 var regwnd_x;
 var regwnd_y;
 
-function update_input()
-{
-    if (editing_input != null && global_input.value != null)
-          editing_input.input_text.text = global_input.value;
-}
+var user_fields = {
+    name        : '姓名',
+    school      : '学校',
+    student_id  : '学号',
+    phone       : '手机',
+};
 
-function create_text_box(label, info, x, y)
+var input_user_info = {}
+
+function create_text_box(info, x, y)
 {
     var font_size = 50;
     var input_width = 400;
@@ -34,9 +37,10 @@ function create_text_box(label, info, x, y)
     wnd.x = x;
     wnd.y = y;
     var input_off = 200;
+    var label = user_fields[info];
 
     var text = createText(label, font_size, '0x030303', 0, 0);
-    var input_text = createText("", 40, "0x030303", input_off, 3);
+    var input_text = createText(input_user_info[info], 40, "0x030303", input_off, 3);
     /*
     var input = new PixiTextInput("", {
         fontSize : font_size, 
@@ -47,7 +51,7 @@ function create_text_box(label, info, x, y)
     input.on('pointerdown', function(e){ 
         var str = window.prompt('请输入' + label);
         input_text.text = str;
-        user_info[info] = str;
+        input_user_info[info] = str;
     });
     input.input_text = input_text;
     input.x = input_off;
@@ -60,10 +64,38 @@ function create_text_box(label, info, x, y)
     return wnd;
 }
 
+function save_user_info()
+{
+    console.log("save", JSON.stringify(user_info));
+    setCookie("userinfo", JSON.stringify(user_info), 30);
+}
+
+function check_field(key)
+{
+    if (!input_user_info[key] || input_user_info[key].length == 0)
+    {
+        message_box("{0}不能为空".format(user_fields[key]));
+        return false;
+    }
+    return true;
+}
+
+function check_user_info()
+{
+    for (var field in user_fields)
+    {
+        if (!check_field(field))
+            return false;
+    }
+    return true;
+}
+
 class RegisterWindow
 {
     constructor(x, y)
     {
+        input_user_info = shallow_clone(user_info);
+
         // Create rank window sprite
         var window = new Container();
         this.window = window;
@@ -96,27 +128,44 @@ class RegisterWindow
         var yoff = 400, ygap = 120;
         var input;
 
-        input = create_text_box("姓名", 'name', xoff, yoff);
+        input = create_text_box('name', xoff, yoff);
         window.addChild(input);
         yoff += ygap;
 
-        input = create_text_box("学校", 'school', xoff, yoff);
+        input = create_text_box('school', xoff, yoff);
         window.addChild(input);
         yoff += ygap;
 
-        input = create_text_box("学号", 'student_id', xoff, yoff);
+        input = create_text_box('student_id', xoff, yoff);
         window.addChild(input);
         yoff += ygap;
 
-        input = create_text_box("手机", 'phone', xoff, yoff);
+        input = create_text_box('phone', xoff, yoff);
         window.addChild(input);
 
         // Create buttons
         var ok_btn = createButton(btn_ok_image, width/2 - 150, height - 200,
-            function(){
-                // TODO: connect to server and register
-                console.log(user_info);
-                stage.removeChild(window);
+            function() {
+
+                if (!check_user_info())
+                    return;
+
+                // Clear the user_info.id and try to login
+                input_user_info.id = null;
+                student_register(input_user_info, function(success, id) {
+                    if (!success)
+                    {
+                        alert("学生登陆失败：" + id);
+                        return;
+                    }
+                    
+                    // Set user id & save user info
+                    user_info = shallow_clone(input_user_info);
+                    user_info.id = id;
+                    save_user_info();
+                    console.log(user_info);
+                    stage.removeChild(window);
+                });
             }
         );
         ok_btn.scale.set(1.5);

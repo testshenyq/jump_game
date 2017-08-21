@@ -14,26 +14,28 @@ class LoginWindow
 {
     create_simple_button(name, x, y, func)
     {
-        var btn_scale = 4;
-        var text_offx = 50;
-        var text_offy = 32;
+        var btn_scale = 5;
 
         var btn = new Sprite(resources[button_image].texture);
         btn.scale.x = btn_scale;
         btn.scale.y = btn_scale;
         btn.interactive = true;
         btn.on('pointerdown', func);
+        btn.anchor.set(0.5);
+        btn.pivot.set(0.5);
 
         var textStyle = {
             fontSize : 36,
             fill : '#ffffff',
         };
         var basicText = new PIXI.Text(name, textStyle);
-        basicText.x = x + text_offx;
-        basicText.y = y + text_offy;
+        basicText.x = x;
+        basicText.y = y;
+        basicText.anchor.set(0.5);
+        basicText.pivot.set(0.5);
+
         btn.x = x;
         btn.y = y;
-
         this.window.addChild(btn);
         this.window.addChild(basicText);
         return btn;
@@ -53,22 +55,42 @@ class LoginWindow
         fill_sprite(login_bg);
         window.addChild(login_bg);
 
+        var name = "游客";
+        var user_cookie = getCookie("userinfo");
+        if (user_cookie)
+        {
+            console.log(user_cookie);
+            user_info = JSON.parse(user_cookie); 
+            name = user_info.name;
+            var text = createText('欢迎回来，{0}'.format(name), 
+                    50, '0xe4e4e4', canvas_width/2, 100);
+            text.anchor.set(0.5);
+            window.addChild(text);
+        }
+
         var text = createText('寻找有趣的灵魂', 60, '0xffffff', canvas_width / 2, 500);
         text.anchor.set(0.5);
         window.addChild(text);
 
+        /*
         this.create_simple_button("  排行榜 ", 100, canvas_height / 2, function() {
             console.log("排行榜");
             show_rank_window();
-        });
-        this.create_simple_button("学生登录", canvas_width / 2 - 120, canvas_height / 2, function() {
-            console.log("学生登陆");
-            show_register_window();
-        });
-        this.create_simple_button("游客登录", canvas_width - 350, canvas_height / 2, function() {
-            console.log("游客登录");
-            show_start_window();
-        });
+        });*/
+
+        this.create_simple_button("学生登录", canvas_width / 2, canvas_height / 2 - 100, 
+                function() {
+                    console.log("学生登陆");
+                    show_register_window();
+                }
+        );
+
+        this.create_simple_button("进入游戏", canvas_width / 2, canvas_height / 2 + 100, 
+                function() {
+                    console.log("进入游戏");
+                    show_start_window();
+                }
+        );
 
         text = createText('(注意：填写实名信息并以学生登陆才可参与排行抽奖)', 
                 26, '0x444444', canvas_width / 2, canvas_height - 180);

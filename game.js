@@ -143,7 +143,7 @@ var score_label;
 var time_label;
 var time_sprite;
 var count_down;
-var total_time = 5;
+var total_time = 60;
 var game_state = "login";
 var bricks;
 var boxes;

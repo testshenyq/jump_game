@@ -22,8 +22,7 @@ var btn_ok_image = "images/btn_ok.png"
 var btn_return_image = "images/btn_return.png"
 var btn_retry_image = "images/btn_retry.png"
 var brick_line_image = "images/brick_level.jpg"
-var box_image = "images/box1.png"
-var box2_image = "images/box2.png"
+var box_image = "images/death_box.png"
 var star_image = "images/star2.png"
 var loading_image = "images/black_bg.jpg"
 var game_over_image = "images/game_over.png"
@@ -58,7 +57,6 @@ var res_list = [
     btn_retry_image,
     brick_line_image,
     box_image,
-    box2_image,
     star_image,
     game_over_image,
     alpha_bg_image,
@@ -74,11 +72,6 @@ var res_list = [
     audio_collide,
     audio_jump,
     audio_pick,
-];
-
-var box_images = [
-    box_image,
-    box2_image,
 ];
 
 loader.add(loading_image)
@@ -419,8 +412,7 @@ class DeathBox
     {
         this.level = level;
         var box_num = 2;
-        var box_tex = box_images[Math.floor(Math.random() * box_num)];
-        this.sprite = create_sprite(box_tex);
+        this.sprite = create_sprite(box_image);
         this.sprite.anchor.set(0.5);
         this.x = canvas_width / 2 + rand1() * box_pos_info[idx][0];
         this.y = level * level_height + box_pos_info[idx][1] + rand1() * box_pos_info[idx][2];

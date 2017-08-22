@@ -182,6 +182,7 @@ class RegisterWindow
     {
         hide_reg_dom();
         stage.removeChild(this.window);
+        show_login_window();
     }
 }
 

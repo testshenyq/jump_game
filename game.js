@@ -665,6 +665,7 @@ function show_rank_window()
 
 function show_register_window()
 {
+    clear_scene();
     var reg_wnd = new RegisterWindow(canvas_width / 2, 0);
     reg_wnd.attachTo(stage);
 }

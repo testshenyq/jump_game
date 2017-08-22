@@ -38,7 +38,7 @@ var btn_menu_image = "images/btn_main_menu.png"
 var btn_student_image = "images/btn_student.png"
 
 var audio_die = "/audios/die.mp3"
-var audio_collide = "/images/collide.mp3"
+var audio_collide = "/audios/collide.mp3"
 var audio_jump = "/audios/jump.mp3"
 var audio_pick = "/audios/pick.mp3"
 var audios = {}
@@ -68,10 +68,6 @@ var res_list = [
     btn_rank_image,
     btn_menu_image,
     btn_student_image,
-    audio_die,
-    audio_collide,
-    audio_jump,
-    audio_pick,
 ];
 
 loader.add(loading_image)
@@ -441,8 +437,8 @@ class DeathBox
 
 function play_audio(name)
 {
-    var audio = audios[name];
-    audio.play();
+    // var audio = audios[name];
+    // audio.play();
 }
 
 function startup()

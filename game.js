@@ -10,6 +10,10 @@ var Container = PIXI.Container,
     Sprite = PIXI.Sprite,
     Graphics = PIXI.Graphics;
 
+// Hosted in github pages?
+var IN_GHPAGES = "https://raw.githubusercontent.com/testshenyq/jump_game/gh-pages";
+// var IN_GHPAGES = false;
+
 var player_image = "images/players/player.png";
 var bg_image = "images/bg_sky.jpg"
 var login_bg_image = "images/login_bg.jpg"
@@ -446,13 +450,16 @@ function startup()
     loading_percent = 100;
     show_login_window();
 
+    var prefix = IN_GHPAGES ? IN_GHPAGES : '';
+
     // Init audios
     audios = {
-        collide : new Audio(audio_collide),
-        die : new Audio(audio_die),
-        jump : new Audio(audio_jump),
-        pick : new Audio(audio_pick),
+        collide : new Audio(prefix + audio_collide),
+        die : new Audio(prefix + audio_die),
+        jump : new Audio(prefix + audio_jump),
+        pick : new Audio(prefix + audio_pick),
     }
+    console.log(audios);
 
     //Set the game state
     state = play;

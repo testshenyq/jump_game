@@ -85,6 +85,7 @@ loader.add(loading_image)
 
 var loading_percent = 0;
 var loading_text;
+
 function start_loading()
 {
     var bg = new Sprite(resources[loading_image].texture);

@@ -12,7 +12,7 @@ var Container = PIXI.Container,
 
 // Hosted in github pages?
 var IN_GHPAGES = "https://raw.githubusercontent.com/testshenyq/jump_game/gh-pages";
-// var IN_GHPAGES = false;
+// var IN_GHPAGES = '';
 
 var player_image = "images/players/player.png";
 var bg_image = "images/bg_sky.jpg"
@@ -41,10 +41,10 @@ var btn_rank_image = "images/btn_rank.png"
 var btn_menu_image = "images/btn_main_menu.png"
 var btn_student_image = "images/btn_student.png"
 
-var audio_die = "/audios/die.ogg"
-var audio_collide = "/audios/collide.ogg"
-var audio_jump = "/audios/jump.ogg"
-var audio_pick = "/audios/pick.ogg"
+var audio_die = "/audios/die"
+var audio_collide = "/audios/collide"
+var audio_jump = "/audios/jump"
+var audio_pick = "/audios/pick"
 var audios = {}
 
 var res_list = [
@@ -446,19 +446,26 @@ function play_audio(name)
     audio.play();
 }
 
+function create_audio(file)
+{
+    var prefix = IN_GHPAGES;
+    var sound = new Howl({
+        src: [prefix + file + ".mp3", prefix + file + ".ogg"],
+    });
+    return sound;
+}
+
 function startup()
 {
     loading_percent = 100;
     show_login_window();
 
-    var prefix = IN_GHPAGES ? IN_GHPAGES : '';
-
     // Init audios
     audios = {
-        collide : new Audio(prefix + audio_collide),
-        die : new Audio(prefix + audio_die),
-        jump : new Audio(prefix + audio_jump),
-        pick : new Audio(prefix + audio_pick),
+        collide : create_audio(audio_collide),
+        die     : create_audio(audio_die),
+        jump    : create_audio(audio_jump),
+        pick    : create_audio(audio_pick),
     }
     console.log(audios);
 

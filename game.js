@@ -24,6 +24,7 @@ var rank_window_image = "images/rank_wnd.jpg"
 var rank_item_image = "images/rank_item.png"
 var btn_ok_image = "images/btn_ok.png"
 var btn_return_image = "images/btn_return.png"
+var btn_return2_image = "images/btn_return2.png"
 var btn_retry_image = "images/btn_retry.png"
 var brick_line_image = "images/brick_level.jpg"
 var box_image = "images/death_box.png"
@@ -33,6 +34,7 @@ var game_over_image = "images/game_over.png"
 var alpha_bg_image = "images/alpha_bg.png"
 var register_wnd_image = "images/register_wnd.jpg"
 var gift_wnd_image = "images/gift_wnd.jpg"
+var rule_wnd_image = "images/rule_wnd.jpg"
 var time_image = "images/count_down.png"
 
 var btn_enter_game_image = "images/btn_enter_game.png"
@@ -40,6 +42,7 @@ var btn_gift_image = "images/btn_gift.png"
 var btn_rank_image = "images/btn_rank.png"
 var btn_menu_image = "images/btn_main_menu.png"
 var btn_student_image = "images/btn_student.png"
+var btn_rule_image = "images/btn_rule.png"
 
 var audio_die = "/audios/die"
 var audio_collide = "/audios/collide"
@@ -58,6 +61,7 @@ var res_list = [
     rank_window_image,
     btn_ok_image,
     btn_return_image,
+    btn_return2_image,
     btn_retry_image,
     brick_line_image,
     box_image,
@@ -66,12 +70,14 @@ var res_list = [
     alpha_bg_image,
     register_wnd_image,
     gift_wnd_image,
+    rule_wnd_image,
     time_image,
     btn_enter_game_image,
     btn_gift_image,
     btn_rank_image,
     btn_menu_image,
     btn_student_image,
+    btn_rule_image,
 ];
 
 loader.add(loading_image)
@@ -603,14 +609,38 @@ function show_gift_window()
     bg.interactive = true;
     fill_sprite(bg);
     stage.addChild(bg);
+    var interval = 0.2;
+    var yoff = 0.88;
 
-    // Create button
-    create_button(bg, btn_return_image, 1,
-        canvas_width / 2, canvas_height * 0.9,
+    // Create buttons
+    create_button(bg, btn_rule_image, 1,
+        canvas_width * (0.5 - interval), canvas_height * yoff,
+        function() {
+            show_rule_window();
+        }
+    );
+
+    create_button(bg, btn_return2_image, 1,
+        canvas_width * (0.5 + interval), canvas_height * yoff,
         function() {
             stage.removeChild(bg);
         }
     );
+}
+
+function show_rule_window()
+{
+    var bg = new Sprite(resources[rule_wnd_image].texture);
+    bg.interactive = true;
+    fill_sprite(bg);
+    stage.addChild(bg);
+    var yoff = 0.85;
+
+    create_button(bg, btn_return2_image, 1,
+        canvas_width * 0.5, canvas_height * yoff,
+        function() {
+            stage.removeChild(bg);
+        });
 }
 
 function show_start_window()
@@ -725,12 +755,11 @@ function notify_game_over()
 
         // Report score info to server
         report_score(user_info.id, score, extra_info, function(result, reason) {
-
             if (result)
                 // 更新最高分
                 user_info.max_score = score;
             else
-                message_box("上报最新分数失败");
+                message_box("上报分数失败:" + reason);
         });
     }
 }

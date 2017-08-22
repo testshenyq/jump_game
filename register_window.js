@@ -45,7 +45,7 @@ function check_field(key)
 
 function show_reg_dom(reg_wnd)
 {
-    dom_regwnd.style.visibility = 'visible';
+    dom_regwnd.style.display = 'inline';
     reg_wnd.input_elements = {};
     console.log(input_user_info);
 
@@ -76,7 +76,7 @@ function hide_reg_dom()
         var input_elem = this.input_elements[key];
         input_elem.blur();
     }
-    dom_regwnd.style.visibility = 'hidden';
+    dom_regwnd.style.display = 'none';
 }
 
 function get_input_element(name)

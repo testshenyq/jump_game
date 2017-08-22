@@ -14,7 +14,6 @@ var player_image = "images/players/player.png";
 var bg_image = "images/bg_sky.jpg"
 var login_bg_image = "images/login_bg.jpg"
 var start_bg_image = "images/start_bg.jpg"
-var button_image = "images/button.png"
 var scroll_bg_image = "images/transparent.png"
 var rank_mask_image = "images/white.jpg"
 var rank_window_image = "images/rank_wnd.jpg"
@@ -50,7 +49,6 @@ var res_list = [
     bg_image,
     login_bg_image,
     start_bg_image,
-    button_image,
     scroll_bg_image,
     rank_item_image,
     rank_mask_image,
@@ -130,14 +128,20 @@ var ratio = size[0] / size[1];
 var born_pos = [canvas_width/2, canvas_height/1.5];
 
 // Game properties
-var jmp_horz_speed = 150;
-var jmp_vert_speed = 550;
-var gravity = 1000;
+var jmp_horz_speed = 165;
+var jmp_vert_speed = 600;
+var gravity = 1300;
 var level_height = 600;
-var gap_size_range = [canvas_width * 0.45, canvas_width * 0.55];
+var gap_size_range = [canvas_width * 0.4, canvas_width * 0.55];
 var gap_pos_range = canvas_width * 0.185;
-var box_pos_info = [canvas_width * 0.185, canvas_height * 0.42, canvas_height * 0.026];
-var star_pos_info = [canvas_width * 0.14, canvas_height * 0.252, canvas_height * 0.052];
+var box_pos_info = [
+    [canvas_width * 0.185, canvas_height * 0.42, canvas_height * 0.026],
+    [canvas_width * 0.22, canvas_height * 0.25, canvas_height * 0.035],
+];
+var star_pos_info = [
+    [canvas_width * 0.14, canvas_height * 0.252, canvas_height * 0.052],
+    [canvas_width * 0.2, canvas_height * 0.15, canvas_height * 0.08]
+];
 var prepare_level = canvas_height / level_height;
 var camera_focus_pos = canvas_height / 2;
 var camera_pos = 0;
@@ -158,9 +162,10 @@ var game_state = "login";
 var scene_obs = [];
 var eat_stars = [];
 var remove_obs = [];
+var cache_sprites = {};
 
 // Security
-var need_extra_report_score = 40;
+var need_extra_report_score = 50;
 var op_list = [];
 
 // Time
@@ -223,6 +228,37 @@ renderer.plugins.interaction.on('pointerdown', function(e) {
     }
 });
 
+function create_sprite(texture)
+{
+    var cache_list = cache_sprites[texture];
+    if (cache_list && cache_list.length > 0)
+        return cache_list.shift();
+
+    var sprite = new Sprite(resources[texture].texture);
+    sprite.texture_name = texture;
+    return sprite;
+}
+
+function recycle_sprite(sprite)
+{
+    var texture = sprite.texture_name;
+    if (!texture)
+    {
+        // Not texture, just remove from parent
+        sprite.parent.removeChild(sprite);
+        return;
+    }
+
+    sprite.parent.removeChild(sprite);
+    var cache_list = cache_sprites[texture];
+    if (!cache_list)
+    {
+        cache_list = [];
+        cache_sprites[texture] = cache_list;
+    }
+    cache_list.push(sprite);
+}
+
 function play_eat_star(star)
 {
     star.eat_time = last_time;
@@ -282,8 +318,9 @@ function remove_object(ob)
     var idx = scene_obs.indexOf(ob);
     if (idx >= 0)
         scene_obs.splice(idx, 1);
+
     if (ob.remove_render)
-        stage.removeChild(ob.get_render_ob());
+        ob.remove();
 }
 
 // A BrickLevel contains two line brick with a gap
@@ -292,8 +329,8 @@ class BrickLevel
     constructor(level, gap_size, gap_pos)
     {
         var container = new Container();
-        var left_brick = new Sprite(resources[brick_line_image].texture); 
-        var right_brick = new Sprite(resources[brick_line_image].texture); 
+        var left_brick = create_sprite(brick_line_image);
+        var right_brick = create_sprite(brick_line_image);
         container.addChild(left_brick);
         container.addChild(right_brick);
         left_brick.x = canvas_width / 2 - gap_size / 2 + gap_pos - left_brick.width;
@@ -324,19 +361,29 @@ class BrickLevel
             notify_game_over(); 
         }
     }
+
+    remove()
+    {
+        recycle_sprite(this.left_brick); 
+        recycle_sprite(this.right_brick);
+        stage.removeChild(this.get_render_ob());
+    }
 }
 
 // Star object, add score when collide
 class Star
 {
-    constructor(level)
+    constructor(level, idx)
     {
         this.level = level;     
-        this.sprite = new Sprite(resources[star_image].texture);
-        this.sprite.anchor.set(0.5);
-        this.sprite.pivot.set(0.5);
-        this.x = canvas_width / 2 + rand1() * star_pos_info[0];
-        this.y = level * level_height + star_pos_info[1] + rand1() * star_pos_info[2];
+        var sprite = create_sprite(star_image);
+        this.sprite = sprite;
+        sprite.anchor.set(0.5);
+        sprite.pivot.set(0.5);
+        sprite.alpha = 1.0;
+        sprite.scale.set(1);
+        this.x = canvas_width / 2 + rand1() * star_pos_info[idx][0];
+        this.y = level * level_height + star_pos_info[idx][1] + rand1() * star_pos_info[idx][2];
     }
 
     get_render_ob()
@@ -358,18 +405,25 @@ class Star
               play_eat_star(this.get_render_ob()); 
          }
     }
+
+    remove()
+    {
+        recycle_sprite(this.get_render_ob());
+    }
 }
 
 // Death box, dead when collide
 class DeathBox
 {
-    constructor(level)
+    constructor(level, idx)
     {
-        this.level = level;     
-        this.sprite = new Sprite(resources[box_image].texture);
+        this.level = level;
+        var box_num = 2;
+        var box_tex = box_images[Math.floor(Math.random() * box_num)];
+        this.sprite = create_sprite(box_tex);
         this.sprite.anchor.set(0.5);
-        this.x = canvas_width / 2 + rand1() * box_pos_info[0];
-        this.y = level * level_height + box_pos_info[1] + rand1() * box_pos_info[2];
+        this.x = canvas_width / 2 + rand1() * box_pos_info[idx][0];
+        this.y = level * level_height + box_pos_info[idx][1] + rand1() * box_pos_info[idx][2];
     }
 
     get_render_ob()
@@ -385,6 +439,11 @@ class DeathBox
             play_audio("die");
             notify_game_over();
         }
+    }
+
+    remove()
+    {
+        recycle_sprite(this.get_render_ob());
     }
 }
 
@@ -473,11 +532,20 @@ function start_game()
     game_state = "play";
 }
 
+function clear_object(ob)
+{
+    if (ob.children)
+    {
+        for (var i = ob.children.length - 1; i >= 0; i--)
+            clear_object(ob.children[i]);
+    }
+    recycle_sprite(ob);
+}
+
 function clear_scene() 
 {
-    for (var i = stage.children.length - 1; i >= 0; i--) {	
-        stage.removeChild(stage.children[i]);
-    };
+    for (var i = stage.children.length - 1; i >= 0; i--)
+        clear_object(stage.children[i]);
 }
 
 function gameLoop()
@@ -614,6 +682,7 @@ function notify_add_score()
 function player_dead()
 {
     game_state = "dead";
+    // console.log("collide dir = ", cat.collide_dir);
 
     // Change velocity
     cat.vx = cat.vx * cat.collide_dir[0];
@@ -669,7 +738,7 @@ function update_score(force)
         level_score = new_score;
         var score = level_score + star_score;
         score_label.text = score.toString();
-        console.log(scene_obs.length, stage.children.length);
+        // console.log(scene_obs.length, stage.children.length);
     }
 }
 
@@ -705,7 +774,6 @@ function update_scene_obs()
 
     if (remove_obs.length > 0)
     {
-        console.log("remove", remove_obs.length);
         for (var i = 0; i < remove_obs.length; i++)
             remove_object(remove_obs[i]);
         remove_obs.length = 0;
@@ -724,7 +792,7 @@ function update_stars()
         if (passed > 500)
         {
             remove_num ++;
-            stage.removeChild(star);
+            recycle_sprite(star);
         }
     }
     for (var i = 0; i < remove_num; i++)
@@ -741,12 +809,11 @@ function update_player_death()
             return;
         }
 
-        cat.x += cat.vx * delta_time * 0.003;
-        cat.y += cat.vy * delta_time * 0.003;
+        cat.x += cat.vx * delta_time * 0.002;
+        cat.y += cat.vy * delta_time * 0.002;
         cat.rotation += 200 * delta_time;
 
         var die_time = Date.now() - cat.die_time;
-
         if (die_time < 100)
             stage.scale.set(1.01 + cat.shake * 0.01);
         else
@@ -815,8 +882,8 @@ function build_brick(level)
 {
     // Change gap size by level
     var gap_size = gap_size_range[0] + (gap_size_range[1] - gap_size_range[0]) * Math.random();
-    var max_change_scale = 0.25;
-    var size_scale = 1 - Math.min(max_change_scale * level / 20, max_change_scale);
+    var max_change_scale = 0.33;
+    var size_scale = 1 - Math.min(max_change_scale * level / 30, max_change_scale);
     gap_size *= size_scale;
     var gap_pos = rand1() * gap_pos_range;
     var brick_level = new BrickLevel(level, gap_size, gap_pos);
@@ -826,14 +893,40 @@ function build_brick(level)
 
 function build_box(level)
 {
-    var box = new DeathBox(level);
-    add_object(box);
+    // Refresh some boxes
+    var num = 1;
+    if (level > 20)
+        num = 2;
+    else if (level > 10)
+    {
+        if (Math.random() < (level - 10) * 0.1)
+            num = 2;
+    }
+
+    for (var i = 0; i < num; i++)
+    {
+        var box = new DeathBox(level, i);
+        add_object(box);
+    }
 }
 
 function build_star(level)
 {
-    var star = new Star(level);
-    add_object(star);
+    // Refresh some stars
+    var num = 1;
+    if (level > 20)
+        num = 2;
+    else if (level > 10)
+    {
+        if (Math.random() < (level - 10) * 0.1)
+            num = 2;
+    }
+
+    for (var i = 0; i< num; i++)
+    {
+        var star = new Star(level, i);
+        add_object(star);
+    }
 }
 
 function play() 

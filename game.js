@@ -128,13 +128,15 @@ var level_height = 600;
 var gap_size_range = [canvas_width * 0.4, canvas_width * 0.55];
 var gap_pos_range = canvas_width * 0.185;
 var box_pos_info = [
-    [canvas_width * 0.185, canvas_height * 0.42, canvas_height * 0.026],
-    [canvas_width * 0.22, canvas_height * 0.25, canvas_height * 0.035],
+    [canvas_width * 0.185, canvas_height * 0.45, canvas_height * 0.03],
+    [canvas_width * 0.22, canvas_height * 0.2, canvas_height * 0.03],
 ];
 var star_pos_info = [
-    [canvas_width * 0.14, canvas_height * 0.252, canvas_height * 0.052],
-    [canvas_width * 0.2, canvas_height * 0.15, canvas_height * 0.08]
+    [canvas_width * 0.14, canvas_height * 0.32, canvas_height * 0.04],
+    [canvas_width * 0.2, canvas_height * 0.1, canvas_height * 0.03]
 ];
+var double_star_level = 20;
+var double_box_level = 20;
 var prepare_level = canvas_height / level_height;
 var camera_focus_pos = canvas_height / 2;
 var camera_pos = 0;
@@ -411,7 +413,6 @@ class DeathBox
     constructor(level, idx)
     {
         this.level = level;
-        var box_num = 2;
         this.sprite = create_sprite(box_image);
         this.sprite.anchor.set(0.5);
         this.x = canvas_width / 2 + rand1() * box_pos_info[idx][0];
@@ -670,7 +671,8 @@ function show_game_over_window()
 
 function notify_add_score()
 {
-    star_score++;
+    // Add 2 score for one star
+    star_score +=2;
     update_score(true);
 }
 
@@ -742,9 +744,7 @@ function update_scene_obs()
     var new_level = Math.floor(camera_pos / level_height) + 1;
     if (new_level >= 2 && new_level > cur_level)
     {
-         build_brick(new_level);
-         build_star(new_level);
-         build_box(new_level);
+         build_scene(new_level);
          cur_level = new_level;
     }
 
@@ -892,9 +892,9 @@ function build_box(level)
 {
     // Refresh some boxes
     var num = 1;
-    if (level > 20)
+    if (level > double_box_level)
         num = 2;
-    else if (level > 10)
+    else if (level > double_box_level / 2)
     {
         if (Math.random() < (level - 10) * 0.1)
             num = 2;
@@ -911,9 +911,9 @@ function build_star(level)
 {
     // Refresh some stars
     var num = 1;
-    if (level > 20)
+    if (level > double_star_level)
         num = 2;
-    else if (level > 10)
+    else if (level > double_star_level / 2)
     {
         if (Math.random() < (level - 10) * 0.1)
             num = 2;

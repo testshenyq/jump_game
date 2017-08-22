@@ -70,6 +70,12 @@ function show_reg_dom(reg_wnd)
 
 function hide_reg_dom()
 {
+    // Blur all items before hide
+    for (var key in this.input_elements)
+    {
+        var input_elem = this.input_elements[key];
+        input_elem.blur();
+    }
     dom_regwnd.style.visibility = 'hidden';
 }
 

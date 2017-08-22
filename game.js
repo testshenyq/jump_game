@@ -437,8 +437,8 @@ class DeathBox
 
 function play_audio(name)
 {
-    // var audio = audios[name];
-    // audio.play();
+    var audio = audios[name];
+    audio.play();
 }
 
 function startup()

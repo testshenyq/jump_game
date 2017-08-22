@@ -827,8 +827,10 @@ function update_player()
     px += Math.floor(cat.vx * delta_time * 0.001);
     py -= Math.floor(cat.vy * delta_time * 0.001);
 
-    px = Math.max(player_size[0] / 2, px);
-    px = Math.min(canvas_width - player_size[0] / 2, px);
+    var minx = player_size[0] / 2;
+    var maxx = canvas_width - minx;
+    px = Math.max(minx, px);
+    px = Math.min(maxx, px);
 
     cat.x = px;
     var y = py;

@@ -12,7 +12,7 @@ var Container = PIXI.Container,
 
 var btn_ok_image = "images/btn_ok.png"
 var btn_return_image = "images/btn_return.png"
-var input_image = "images/rank_item.png"
+var input_image = "images/transparent.png"
 var window_size = [canvas_width, canvas_height];
 var editing_input;
 var regwnd_x;
@@ -26,45 +26,6 @@ var user_fields = {
 };
 
 var input_user_info = {}
-
-function create_text_box(info, x, y)
-{
-    var font_size = 26;
-    var wnd = new Container();
-    wnd.x = x;
-    wnd.y = y;
-    var input_off = window_size[0] * 0.2;
-    var label = user_fields[info];
-    var text_margin = 8;
-
-    // var text = createText(label, font_size, '0x030303', 0, 0);
-    var input_text = createText(input_user_info[info], 
-            font_size, "0x030303", input_off + text_margin, text_margin);
-    /*
-    var input = new PixiTextInput("", {
-        fontSize : font_size, 
-    });*/
-    var input = new Sprite(resources[input_image].texture);
-    var scalex = 0.6, scaley = 0.4;
-    input.scale.set(scalex, scaley);
-    input.interactive = true;
-    input.on('pointerdown', function(e){ 
-        var str = window.prompt('请输入' + label, input_user_info[info]);
-        if (str == null)
-            return;
-        input_text.text = str;
-        input_user_info[info] = str;
-    });
-    input.input_text = input_text;
-    input.x = input_off;
-    input.y = 0;
-
-    // wnd.addChild(text);
-    wnd.addChild(input);
-    wnd.addChild(input_text);
-
-    return wnd;
-}
 
 function save_user_info()
 {
@@ -82,14 +43,39 @@ function check_field(key)
     return true;
 }
 
-function check_user_info()
+function show_reg_dom(reg_wnd)
 {
-    for (var field in user_fields)
+    dom_regwnd.style.visibility = 'visible';
+    reg_wnd.input_elements = {};
+    console.log(input_user_info);
+
+    for (var type in user_fields)
     {
-        if (!check_field(field))
-            return false;
+        // Init value
+        var input_elem = get_input_element(type);
+        input_elem.value = input_user_info[type];
+        reg_wnd.input_elements[type] = input_elem;
+
+        // Register events callbacks
+        input_elem.onfocus = function(type, e) {
+            console.log(type, "focus");
+            this.value = input_user_info[type];
+        }.bind(input_elem, type)
+        input_elem.onblur = function(type, e) {
+            console.log(type, "blur");
+            input_user_info[type] = this.value;
+        }.bind(input_elem, type)
     }
-    return true;
+}
+
+function hide_reg_dom()
+{
+    dom_regwnd.style.visibility = 'hidden';
+}
+
+function get_input_element(name)
+{
+    return document.getElementById('reg_input_' + name);
 }
 
 class RegisterWindow
@@ -105,6 +91,7 @@ class RegisterWindow
         };
 
         // Create rank window sprite
+        var this_wnd = this;
         var window = new Container();
         this.window = window;
         var width = window_size[0];
@@ -122,30 +109,18 @@ class RegisterWindow
 
         // Create input fileds
         var xoff= window_size[0] * 0.12;
-        var yoff = window_size[1] * 0.33 , ygap = window_size[1] * 0.072;
+        var yoff = window_size[1] * 0.32 , ygap = window_size[1] * 0.073;
         var input;
 
-        input = create_text_box('name', xoff, yoff);
-        window.addChild(input);
-        yoff += ygap;
-
-        input = create_text_box('school', xoff, yoff);
-        window.addChild(input);
-        yoff += ygap;
-
-        input = create_text_box('student_id', xoff, yoff);
-        window.addChild(input);
-        yoff += ygap;
-
-        input = create_text_box('phone', xoff, yoff);
-        window.addChild(input);
+        // Show dom register window & register events
+        show_reg_dom(this);
 
         // Create buttons
         var btn_off = window_size[1] * 0.15;
         var ok_btn = createButton(btn_ok_image, width/2 - 150, height - btn_off,
             function() {
 
-                if (!check_user_info())
+                if (!this.check_user_info())
                     return;
 
                 // Clear the user_info.id and try to login
@@ -162,24 +137,45 @@ class RegisterWindow
                     save_user_info();
 
                     // Close window
-                    stage.removeChild(window);
+                    this_wnd.close();
                 });
-            }
+            }.bind(this)
         );
 
         var ret_btn = createButton(btn_return_image, width/2 + 150, height - btn_off,
             function() {
                 // Close window
-                stage.removeChild(window);
+                this_wnd.close();
             }
         );
         this.window.addChild(ok_btn);
         this.window.addChild(ret_btn);
     }
 
+    check_user_info()
+    {
+        for (var field in user_fields)
+        {
+            // Sync the value in input box
+            var input_elem = this.input_elements[field];
+            input_elem.blur();
+
+            // Check the filed
+            if (!check_field(field))
+                return false;
+        }
+        return true;
+    }
+
     attachTo(parent)
     {
         parent.addChild(this.window);
+    }
+
+    close()
+    {
+        hide_reg_dom();
+        stage.removeChild(this.window);
     }
 }
 

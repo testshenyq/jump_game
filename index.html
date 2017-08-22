@@ -2,20 +2,33 @@
 <meta charset="utf-8">
 <title>寻找有趣的灵魂</title>
 <style>
-    #global_input
+    #regwnd
     {
         position:absolute;
-        width:100%;
-        height:65px;
-        font-size:50px;
-        float:bottom;
-        margin:5px;
-        bottom:0px;
+        left:50%;
+        top:50%;
+        transform:translate3d(-50%,-50%,0);
+        z-index:10;
         visibility:hidden;
+        pointer-events:none;
+    }
+    .input
+    {
+        position:absolute;
+        width:50%;
+        font-size:32px;
+        background-color:transparent;
+        border:none; 
+        pointer-events:all;
     }
 </style>
 <body>
-<input id='global_input'></input>
+<div id="regwnd">
+    <input class='input' id='reg_input_name' style='left:33%;top:33%'></input>
+    <input class='input' id='reg_input_school' style='left:33%;top:40.5%'></input>
+    <input class='input' id='reg_input_student_id' style='left:33%;top:48%'></input>
+    <input class='input' id='reg_input_phone' style='left:33%;top:55.5%'></input>
+</div>
 <script src="howler.min.js" align="center"></script>
 <script src="./backend_interface.js"></script>
 <script src="pixi.js" align="center"></script>

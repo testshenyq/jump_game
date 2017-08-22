@@ -1,4 +1,4 @@
-
+// game.js
 
 //Aliases
 var Container = PIXI.Container,
@@ -179,14 +179,10 @@ renderer.view.style.left = '50%';
 renderer.view.style.top = '50%';
 renderer.view.style.transform = 'translate3d( -50%, -50%, 0 )';
 document.body.appendChild(renderer.view);
+var dom_regwnd = document.getElementById('regwnd');
 resize();
 
 // Create default input element
-var global_input = document.getElementById("global_input");
-global_input.tabindex = -1;
-
-document.body.appendChild(global_input);
-
 function resize() {
     if (window.innerWidth / window.innerHeight >= ratio) {
         var w = window.innerHeight * ratio;
@@ -197,6 +193,8 @@ function resize() {
     }
     renderer.view.style.width = w + 'px';
     renderer.view.style.height = h + 'px';
+    dom_regwnd.style.width = w + 'px';
+    dom_regwnd.style.height = h + 'px';
 }
 
 window.onresize = resize;
@@ -460,6 +458,7 @@ function startup()
 {
     loading_percent = 100;
     show_login_window();
+    // show_register_window();
 
     // Init audios
     audios = {
@@ -651,27 +650,37 @@ function show_game_over_window()
     var game_over = new Sprite(resources[game_over_image].texture);
     game_over.anchor.set(0.5);
     game_over.x = canvas_width / 2;
-    game_over.y = canvas_height * 0.3;
+    game_over.y = canvas_height * 0.25;
     stage.addChild(game_over);
 
     var btn_retry = createButton(
-            btn_retry_image, canvas_width / 2, canvas_height * (0.6 - 0.1), 
+            btn_retry_image, canvas_width / 2, canvas_height * (0.7 - 0.1), 
             function() {
                 show_start_window();
             });
 
     var btn_rank = createButton(
-            btn_rank_image, canvas_width / 2, canvas_height * (0.6), 
+            btn_rank_image, canvas_width / 2, canvas_height * (0.7), 
             function() {
                 show_rank_window();        
             });
 
     var btn_menu = createButton(
-            btn_menu_image, canvas_width / 2, canvas_height * (0.6 + 0.1), 
+            btn_menu_image, canvas_width / 2, canvas_height * (0.7 + 0.1), 
             function() {
                 show_login_window();
             });
 
+    var score = star_score + level_score;
+    var text_score = createText(
+            '本局得分：' + score.toString(), 40, '0xfefefe', canvas_width / 2, canvas_height * 0.36);
+    text_score.anchor.set(0.5,0);
+    var best_score = createText(
+            '历史最高：' + user_info.max_score, 40, '0xfefefe', canvas_width / 2, canvas_height * 0.42);
+    best_score.anchor.set(0.5,0);
+    stage.addChild(text_score);
+    stage.addChild(best_score);
+   
     stage.addChild(btn_retry);
     stage.addChild(btn_rank);
     stage.addChild(btn_menu);

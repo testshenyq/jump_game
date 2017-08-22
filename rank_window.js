@@ -138,6 +138,7 @@ class RankWindow
                 // Update my info
                 label_score.text = my_score.toString();
                 label_rank.text = my_rank.toString();
+                user_info.max_score = my_score;
             }
         });
     }

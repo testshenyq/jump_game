@@ -10,6 +10,8 @@ var Container = PIXI.Container,
     Sprite = PIXI.Sprite,
     Graphics = PIXI.Graphics;
 
+var ActionManager = new ActionManager();
+
 // Hosted in github pages?
 var IN_GHPAGES = "https://raw.githubusercontent.com/testshenyq/jump_game/gh-pages";
 // var IN_GHPAGES = '';
@@ -259,6 +261,19 @@ function recycle_sprite(sprite)
     cache_list.push(sprite);
 }
 
+function create_player_jump_action()
+{
+    // Stop the original jump action
+    if (cat.jump_action && !cat.jump_action.stopped)
+        cat.jump_action.reset();
+    else
+    {
+        // Create the new one
+        var action = new PlayerJump(cat, 0.2, 0.2);
+        ActionManager.start_action(action, cat);
+    }
+}
+
 function play_eat_star(star)
 {
     star.eat_time = last_time;
@@ -288,8 +303,8 @@ function is_collide(cx, cy, sprite)
     var h = sprite.height;
     var xmin = cx + sprite.x - collide_radius;
     var xmax = cx + sprite.x + w + collide_radius;
-    var ymin = cy + sprite.y - collide_radius;
-    var ymax = cy + sprite.y + h + collide_radius;
+    var ymin = cy + sprite.y;
+    var ymax = cy + sprite.y + h + 2 * collide_radius;
     var sx = cat.x;
     var sy = cat.y;
     if (sx > xmin && sx < xmax && sy > ymin && sy < ymax)
@@ -505,7 +520,7 @@ function start_game()
 
     // Create player
     cat = new Sprite(resources[player_image].texture);
-    cat.anchor.set(0.5);
+    cat.anchor.set(0.5, 1);
     cat.pivot.set(0.5);
     cat.collide_dir = [0,0];
     player_size = [cat.width, cat.height];
@@ -574,6 +589,7 @@ function jump(jmp_left)
 {
     var op_time = Math.floor((last_time - start_time) / 10);
     play_audio("jump");
+    create_player_jump_action();
     op_list.push((op_time << 1) + (jmp_left ? 1 : 0));
     apply_speed(jmp_left ? - jmp_horz_speed : jmp_horz_speed, -jmp_vert_speed);
 }
@@ -730,6 +746,10 @@ function player_dead()
     game_state = "dead";
     // console.log("collide dir = ", cat.collide_dir);
 
+    // Stop the jump action
+    if (cat.jump_action && !cat.jump_action.stopped)
+        cat.jump_action.stop();
+
     // Change velocity
     cat.vx = cat.vx * cat.collide_dir[0];
     cat.vy = cat.vy * cat.collide_dir[1];
@@ -863,6 +883,7 @@ function update_player_death()
             stage.scale.set(1);
 
         cat.pivot.set(0.5);
+        cat.anchor.set(0.5);
         cat.shake = -cat.shake;
 
         if (die_time > 500)
@@ -992,6 +1013,9 @@ function play()
 
     update_player();
     update_scene_obs();
+
+    // Update action manager
+    ActionManager.update();
 
     if (cd <= 0)
         notify_game_over();

@@ -168,7 +168,7 @@ var start_time = 0;
 var delta_time = 0;
 var last_time = 0;
 var last_touch_time = 0;
-var touch_time_interval = 160;
+var touch_time_interval = 100;
 
 // Create stage & render
 var stage = new PIXI.Container();

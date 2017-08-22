@@ -396,6 +396,7 @@ class Star
               cat.collide_dir[0] = 0;
               cat.collide_dir[1] = 0;
               notify_add_score();
+              play_audio("pick");
               add_to_remove_list(this, false);
               play_eat_star(this.get_render_ob()); 
          }

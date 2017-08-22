@@ -39,6 +39,12 @@ var btn_rank_image = "images/btn_rank.png"
 var btn_menu_image = "images/btn_main_menu.png"
 var btn_student_image = "images/btn_student.png"
 
+var audio_die = "/audios/die.mp3"
+var audio_collide = "/audios/collide.mp3"
+var audio_jump = "/audios/jump.mp3"
+var audio_pick = "/audios/pick.mp3"
+var audios = {}
+
 var res_list = [
     player_image,
     bg_image,
@@ -66,6 +72,10 @@ var res_list = [
     btn_rank_image,
     btn_menu_image,
     btn_student_image,
+    audio_die,
+    audio_collide,
+    audio_jump,
+    audio_pick,
 ];
 
 var box_images = [
@@ -145,9 +155,6 @@ var time_sprite;
 var count_down;
 var total_time = 60;
 var game_state = "login";
-var bricks;
-var boxes;
-var stars;
 var scene_obs = [];
 var eat_stars = [];
 var remove_obs = [];
@@ -311,7 +318,11 @@ class BrickLevel
         var y = this.container.y;
         if (is_collide(x, y, this.left_brick) ||
             is_collide(x, y, this.right_brick))
+        {
+            play_audio("collide");
+            play_audio("die");
             notify_game_over(); 
+        }
     }
 }
 
@@ -369,15 +380,32 @@ class DeathBox
     update()
     {
         if (is_collide(-this.sprite.width/2, -this.sprite.height/2, this.sprite))
+        {
+            play_audio("collide");
+            play_audio("die");
             notify_game_over();
+        }
     }
+}
+
+function play_audio(name)
+{
+    var audio = audios[name];
+    audio.play();
 }
 
 function startup()
 {
     loading_percent = 100;
     show_login_window();
-    // show_rank_window();
+
+    // Init audios
+    audios = {
+        collide : new Audio(audio_collide),
+        die : new Audio(audio_die),
+        jump : new Audio(audio_jump),
+        pick : new Audio(audio_pick),
+    }
 
     //Set the game state
     state = play;
@@ -392,9 +420,6 @@ function start_game()
     level_score = 0;
     star_score = 0;
     cur_level = 0;
-    bricks = [];
-    boxes = [];
-    stars = [];
     op_list = [];
     scene_obs = [];
     remove_obs = [];
@@ -470,6 +495,7 @@ function gameLoop()
 function jump(jmp_left)
 {
     var op_time = Math.floor((last_time - start_time) / 10);
+    play_audio("jump");
     op_list.push((op_time << 1) + (jmp_left ? 1 : 0));
     apply_speed(jmp_left ? - jmp_horz_speed : jmp_horz_speed, -jmp_vert_speed);
 }
@@ -588,7 +614,6 @@ function notify_add_score()
 function player_dead()
 {
     game_state = "dead";
-    console.log("collide dir = ", cat.collide_dir);
 
     // Change velocity
     cat.vx = cat.vx * cat.collide_dir[0];
@@ -832,19 +857,5 @@ function play()
 
     if (cd <= 0)
         notify_game_over();
-
-    /*
-    // Remove the obs need to be removed
-    for (var i = 0; i < remove_obs.length; i++)
-    {
-        var ob = remove_obs[i];
-        var idx = scene_obs.indexOf(ob);
-        if (idx >= 0)
-            scene_obs.splice(idx, 1);
-    }*/
-    remove_obs = [];
-
-    // update_bricks();
-    // update_boxes();
 }
 

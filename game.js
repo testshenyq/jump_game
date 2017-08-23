@@ -53,6 +53,8 @@ var audio_jump = "/audios/jump"
 var audio_pick = "/audios/pick"
 var audios = {}
 
+var font0 = 'images/font0.xml'
+
 var res_list = [
     player_image,
     bg_image,
@@ -107,6 +109,7 @@ function start_loading()
     for (var i = 0; i < res_list.length; i++)
         loader.add(res_list[i]);
 
+    loader.add('font0', font0);
     loader.on('progress', on_loading_progress)
     loader.load(startup)
 }
@@ -196,8 +199,20 @@ resize();
 
 // Create default input element
 function resize() {
-    var w = window.innerWidth;
-    var h = window.innerWidth / ratio;
+
+    console.log(window.screen);
+    var w, h;
+    if (window.screen.width < window.screen.height)
+    {
+        w = window.innerWidth;
+        h = window.innerWidth / ratio;
+    }
+    else
+    {
+        var w = window.innerHeight * ratio;
+        var h = window.innerHeight;
+    }
+
     renderer.view.style.width = w + 'px';
     renderer.view.style.height = h + 'px';
     dom_regwnd.style.width = w + 'px';
@@ -533,8 +548,16 @@ function start_game()
     stage.addChild(cat);
 
     // Create score label
+    /*
     score_label = createText("0", 65, '0x080808', canvas_width / 2, 60);
     score_label.anchor.set(0.5);
+    */
+    score_label = new PIXI.extras.BitmapText('0', { font: '96px Aharoni'});
+    score_label.anchor.set(0.5);
+    score_label.tint = '0x000000';
+    score_label.x = canvas_width/2;
+    score_label.y = 60;
+
     stage.addChild(score_label);
 
     // Create count down label
@@ -543,7 +566,10 @@ function start_game()
     time_sprite.y = 40;
     time_sprite.anchor.set(0.5);
     stage.addChild(time_sprite);
-    time_label = createText(count_down.toString(), 40, '0x080808', 60, 40);
+    // time_label = createText(count_down.toString(), 40, '0x080808', 60, 40);
+    time_label = new PIXI.extras.BitmapText(count_down.toString(), { font: '40px Aharoni'});
+    time_label.x = 60;
+    time_label.y = 40;
     time_label.anchor.set(0, 0.5);
     stage.addChild(time_label);
 

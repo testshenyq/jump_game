@@ -91,8 +91,13 @@ class RankWindow
         var ret_btn = createButton(btn_return_image, window.width / 2, window.height - btn_off,
             function(){
                 stage.removeChild(window);
+
+                // Callback
+                if (this.close)
+                    this.close();
+
                 console.log("返回...");
-            }
+            }.bind(this)
         );
         this.window.addChild(ret_btn);
     }

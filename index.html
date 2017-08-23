@@ -25,6 +25,27 @@
         pointer-events:all;
         transform-origin: 50% 50%
     }
+    #hire_link
+    {
+        position:absolute;
+        width:100%;
+        top:83%;
+        font-size:60px;
+        text-align:center;
+        pointer-events:all;
+        opacity:0;
+    }
+    #game_over
+    {
+        position:absolute;
+        left:50%;
+        top:50%;
+        transform:translate3d(-50%,-50%,0);
+        z-index:10;
+        display:none;
+        pointer-events:none;
+        margin:0px;
+    }
 </style>
 <body>
 <div id="regwnd">
@@ -32,6 +53,9 @@
     <input class='input' id='reg_input_school' style='left:33%;top:40%'></input>
     <input class='input' id='reg_input_student_id' style='left:33%;top:47.5%'></input>
     <input class='input' id='reg_input_phone' style='left:33%;top:55%'></input>
+</div>
+<div id='game_over'>
+    <a id="hire_link" href="http://campus.g-bits.com" target="_blank" style='z-index:10'>测试一下</a>
 </div>
 <script src="howler.min.js" align="center"></script>
 <script src="./backend_interface.js"></script>

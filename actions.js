@@ -20,7 +20,7 @@ function ActionManager()
         action.owner = ob;
         ob.actions.push(action);
         this.actions.push(action);
-        console.log(this.actions);
+        // console.log(this.actions);
     }
 
     this.update = function()

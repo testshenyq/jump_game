@@ -191,6 +191,7 @@ renderer.view.style.top = '50%';
 renderer.view.style.transform = 'translate3d( -50%, -50%, 0 )';
 document.body.appendChild(renderer.view);
 var dom_regwnd = document.getElementById('regwnd');
+var dom_gameover = document.getElementById('game_over');
 resize();
 
 // Create default input element
@@ -206,6 +207,8 @@ function resize() {
     renderer.view.style.height = h + 'px';
     dom_regwnd.style.width = w + 'px';
     dom_regwnd.style.height = h + 'px';
+    dom_gameover.style.width = w + 'px';
+    dom_gameover.style.height = h + 'px';
 }
 
 window.onresize = resize;
@@ -491,7 +494,7 @@ function startup()
         jump    : create_audio(audio_jump),
         pick    : create_audio(audio_pick),
     }
-    console.log(audios);
+    // console.log(audios);
 
     //Set the game state
     state = play;
@@ -675,9 +678,10 @@ function show_start_window()
     stage.addChild(start_bg);
 }
 
-function show_rank_window()
+function show_rank_window(close_callback)
 {
     var rank_wnd = new RankWindow(canvas_width / 2, 0);
+    rank_wnd.close = close_callback;
     rank_wnd.attachTo(stage);
 }
 
@@ -691,6 +695,7 @@ function show_register_window()
 function show_game_over_window()
 {
     game_state = "game_over";
+    dom_gameover.style.display = 'inline';
 
     var bg = new Sprite(resources[alpha_bg_image].texture);
     bg.interactive = true;
@@ -709,29 +714,31 @@ function show_game_over_window()
     hire_link.x = canvas_width / 2;
     hire_link.y = canvas_height * 0.88;
     stage.addChild(hire_link);
-    console.log(hire_link);
+    // console.log(hire_link);
     var btn_yoff = 0.63;
     var btn_interval = 0.1;
-    hire_link.interactive = true;
-    hire_link.on('pointerdown', function() {
-        window.open("http://campus.g-bits.com",'_other');
-    });
 
     var btn_retry = createButton(
             btn_retry_image, canvas_width / 2, canvas_height * (btn_yoff - btn_interval), 
             function() {
+                dom_gameover.style.display = 'none';
                 show_start_window();
             });
 
     var btn_rank = createButton(
             btn_rank_image, canvas_width / 2, canvas_height * btn_yoff, 
             function() {
-                show_rank_window();        
+                dom_gameover.style.display = 'none';
+                show_rank_window(function() {
+                    // Recover game over dom when rank window closed
+                    dom_gameover.style.display = 'inline'; 
+                });
             });
 
     var btn_menu = createButton(
             btn_menu_image, canvas_width / 2, canvas_height * (btn_yoff + btn_interval), 
             function() {
+                dom_gameover.style.display = 'none';
                 show_login_window();
             });
 

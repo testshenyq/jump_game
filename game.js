@@ -182,7 +182,7 @@ var start_time = 0;
 var delta_time = 0;
 var last_time = 0;
 var frame_time = 0;
-var frame_time_limit = 33; // 30fps
+var frame_time_limit = 25; // 30fps
 var last_touch_time = 0;
 var touch_time_interval = 100;
 

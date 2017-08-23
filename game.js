@@ -171,7 +171,7 @@ var remove_obs = [];
 var cache_sprites = {};
 
 // Security
-var need_extra_report_score = 50;
+var need_extra_report_score = 80;
 var op_list = [];
 
 // Time
@@ -794,23 +794,28 @@ function notify_game_over()
     var score = level_score + star_score;
     var history_best = score > user_info.max_score;
     if (history_best)
+    {
         user_info.max_score = score;
+        save_user_info();
+    }
 
     // Need to report max score for registered user
     if (history_best && user_info.id)
     {
         var extra_info = null;
-        user_info.max_score = score;
 
         // Need to report op list when score is high enough
         if (score > need_extra_report_score)
             extra_info = [cur_level, start_time, op_list];
 
         // Report score info to server
-        report_score(user_info.id, score, extra_info, function(result, reason) {
+        report_score(user_info.id, score, extra_info, function(result, score_or_reason) {
             if (result)
+            {
                 // 更新最高分
-                user_info.max_score = score;
+                user_info.max_score = score_or_reason;
+                save_user_info();
+            }
             else
                 message_box("上报分数失败:" + reason);
         });

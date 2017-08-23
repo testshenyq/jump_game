@@ -27,12 +27,6 @@ var user_fields = {
 
 var input_user_info = {}
 
-function save_user_info()
-{
-    console.log("save");
-    setCookie("userinfo", JSON.stringify(user_info), 30);
-}
-
 function check_field(key)
 {
     if (!input_user_info[key] || input_user_info[key].length == 0)

@@ -27,6 +27,8 @@ class LoginWindow
         window.addChild(login_bg);
 
         var name = "游客";
+
+        // Read user info from cookie
         var user_cookie = getCookie("userinfo");
         if (user_cookie)
         {
@@ -34,6 +36,8 @@ class LoginWindow
             user_info = JSON.parse(user_cookie); 
             name = user_info.name;
         }
+
+        // Show welcome message
         var text = createText('欢迎回来，{0}'.format(name), 
                 30, '0xe4e4e4', canvas_width/2, canvas_height * 0.05);
         text.anchor.set(0.5);

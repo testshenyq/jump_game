@@ -65,7 +65,7 @@ function query_rank_info(id, callback)
 /*
 发送：[ (string)玩家id, (int)上报分数, (array)详细操作列表 ]
       注意：本条消息比较敏感，最好加密；详细操作列表可能为空
-返回：[ (bool)是否成功，(string)失败原因 ]
+返回：[ (bool)是否成功，(int)玩家实际最高分数 | (string)失败原因]
 */
 // 上报最高分，回调上报结果
 function report_score(id, score, extra_info, callback)
@@ -76,6 +76,6 @@ function report_score(id, score, extra_info, callback)
     var send_text = JSON.stringify(request_info);
 
     // TODO: encrypt & send to server
-    callback(true, "");
+    callback(true, score);
 }
 

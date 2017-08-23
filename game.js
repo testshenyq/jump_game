@@ -38,6 +38,7 @@ var register_wnd_image = "images/register_wnd.jpg"
 var gift_wnd_image = "images/gift_wnd.jpg"
 var rule_wnd_image = "images/rule_wnd.jpg"
 var time_image = "images/count_down.png"
+var hire_link_image = "images/hire_link2.png"
 
 var btn_enter_game_image = "images/btn_enter_game.png"
 var btn_gift_image = "images/btn_gift.png"
@@ -74,6 +75,7 @@ var res_list = [
     gift_wnd_image,
     rule_wnd_image,
     time_image,
+    hire_link_image,
     btn_enter_game_image,
     btn_gift_image,
     btn_rank_image,
@@ -161,7 +163,7 @@ var score_label;
 var time_label;
 var time_sprite;
 var count_down;
-var total_time = 60;
+var total_time = 180;
 var game_state = "login";
 var scene_obs = [];
 var eat_stars = [];
@@ -698,33 +700,50 @@ function show_game_over_window()
     var game_over = new Sprite(resources[game_over_image].texture);
     game_over.anchor.set(0.5);
     game_over.x = canvas_width / 2;
-    game_over.y = canvas_height * 0.25;
+    game_over.y = canvas_height * 0.2;
     stage.addChild(game_over);
 
+    var hire_link = new Sprite(resources[hire_link_image].texture);
+    hire_link.anchor.set(0.5);
+    hire_link.scale.set(1.2);
+    hire_link.x = canvas_width / 2;
+    hire_link.y = canvas_height * 0.88;
+    stage.addChild(hire_link);
+    console.log(hire_link);
+    var btn_yoff = 0.63;
+    var btn_interval = 0.1;
+    hire_link.interactive = true;
+    hire_link.on('pointerdown', function() {
+        window.open("http://campus.g-bits.com",'_other');
+    });
+
     var btn_retry = createButton(
-            btn_retry_image, canvas_width / 2, canvas_height * (0.7 - 0.1), 
+            btn_retry_image, canvas_width / 2, canvas_height * (btn_yoff - btn_interval), 
             function() {
                 show_start_window();
             });
 
     var btn_rank = createButton(
-            btn_rank_image, canvas_width / 2, canvas_height * (0.7), 
+            btn_rank_image, canvas_width / 2, canvas_height * btn_yoff, 
             function() {
                 show_rank_window();        
             });
 
     var btn_menu = createButton(
-            btn_menu_image, canvas_width / 2, canvas_height * (0.7 + 0.1), 
+            btn_menu_image, canvas_width / 2, canvas_height * (btn_yoff + btn_interval), 
             function() {
                 show_login_window();
             });
 
     var score = star_score + level_score;
+    var score_yoff = 0.32;
+    var score_interval = 0.06;
     var text_score = createText(
-            '本局得分：' + score.toString(), 40, '0xfefefe', canvas_width / 2, canvas_height * 0.36);
+            '本局得分：' + score.toString(), 40, '0xfefefe', canvas_width / 2, canvas_height * score_yoff);
     text_score.anchor.set(0.5,0);
+    score_yoff += score_interval;
     var best_score = createText(
-            '历史最高：' + user_info.max_score, 40, '0xfefefe', canvas_width / 2, canvas_height * 0.42);
+            '历史最高：' + user_info.max_score, 40, '0xfefefe', canvas_width / 2, canvas_height * score_yoff);
     best_score.anchor.set(0.5,0);
     stage.addChild(text_score);
     stage.addChild(best_score);
@@ -948,8 +967,8 @@ function build_brick(level)
 {
     // Change gap size by level
     var gap_size = gap_size_range[0] + (gap_size_range[1] - gap_size_range[0]) * Math.random();
-    var max_change_scale = 0.33;
-    var size_scale = 1 - Math.min(max_change_scale * level / 30, max_change_scale);
+    var max_change_scale = 0.3;
+    var size_scale = 1 - Math.min(max_change_scale * level / 40, max_change_scale);
     gap_size *= size_scale;
     var gap_pos = rand1() * gap_pos_range;
     var brick_level = new BrickLevel(level, gap_size, gap_pos);

@@ -181,6 +181,8 @@ var op_list = [];
 var start_time = 0;
 var delta_time = 0;
 var last_time = 0;
+var frame_time = 0;
+var frame_time_limit = 33; // 30fps
 var last_touch_time = 0;
 var touch_time_interval = 100;
 
@@ -200,7 +202,7 @@ resize();
 // Create default input element
 function resize() {
 
-    console.log(window.screen);
+    // console.log(window.screen);
     var w, h;
     if (window.screen.width < window.screen.height)
     {
@@ -209,8 +211,8 @@ function resize() {
     }
     else
     {
-        var w = window.innerHeight * ratio;
-        var h = window.innerHeight;
+        w = window.innerHeight * ratio;
+        h = window.innerHeight;
     }
 
     renderer.view.style.width = w + 'px';
@@ -509,6 +511,8 @@ function startup()
     //Set the game state
     state = play;
 
+    // Init last time & start the game loop
+    last_time = Date.now();
     gameLoop();
 }
 
@@ -576,9 +580,6 @@ function start_game()
     // Build the first level
     build_scene(1);
 
-    // Init last time & start the game loop
-    last_time = Date.now();
-
     // Set game state
     game_state = "play";
 }
@@ -601,8 +602,20 @@ function clear_scene()
 
 function gameLoop()
 {
+    var cur_time = Date.now();
+    var del = cur_time - last_time;
+    last_time = cur_time;        
+
     //Loop this function 60 times per second
     requestAnimationFrame(gameLoop);
+
+    // Limit frame rate
+    frame_time += del;
+    if (frame_time < frame_time_limit)
+        return;
+
+    delta_time = frame_time;
+    frame_time = 0;
 
     //Update the current game state
     state();
@@ -1054,17 +1067,13 @@ function build_star(level)
 
 function play() 
 {
-    var cur_time = Date.now();
-    delta_time = cur_time - last_time;
-    last_time = cur_time;
-
     update_player_death();
     update_stars();
 
     if (game_state != "play")
         return;
 
-    var cd = total_time - Math.floor((cur_time - start_time) / 1000);
+    var cd = total_time - Math.floor((last_time - start_time) / 1000);
     if (cd != count_down)
         update_time(cd);
 

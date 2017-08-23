@@ -792,10 +792,15 @@ function notify_game_over()
     player_dead();
     console.log("Game over!");
     var score = level_score + star_score;
+    var history_best = score > user_info.max_score;
+    if (history_best)
+        user_info.max_score = score;
 
-    if (score > user_info.max_score && user_info.id)
+    // Need to report max score for registered user
+    if (history_best && user_info.id)
     {
         var extra_info = null;
+        user_info.max_score = score;
 
         // Need to report op list when score is high enough
         if (score > need_extra_report_score)

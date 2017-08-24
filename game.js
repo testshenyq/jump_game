@@ -17,6 +17,7 @@ var IN_GHPAGES = "https://raw.githubusercontent.com/testshenyq/jump_game/gh-page
 // var IN_GHPAGES = '';
 
 var player_image = "images/players/player.png";
+var player_dead_image = "images/players/player_dead.png";
 var bg_image = "images/bg_sky.jpg"
 var login_bg_image = "images/login_bg.jpg"
 var start_bg_image = "images/start_bg.jpg"
@@ -61,6 +62,7 @@ var font0 = 'images/font0.xml'
 
 var res_list = [
     player_image,
+    player_dead_image,
     bg_image,
     login_bg_image,
     start_bg_image,
@@ -843,6 +845,9 @@ function player_dead()
 {
     game_state = "dead";
     // console.log("collide dir = ", cat.collide_dir);
+
+    // Change the texture of player
+    cat.setTexture(resources[player_dead_image].texture);
 
     // Stop the jump action
     if (cat.jump_action && !cat.jump_action.stopped)

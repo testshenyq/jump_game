@@ -33,12 +33,14 @@ var box_image = "images/death_box.png"
 var star_image = "images/star2.png"
 var loading_image = "images/black_bg.jpg"
 var game_over_image = "images/game_over.png"
+var game_over_bg_image = "images/game_over_bg.png"
 var alpha_bg_image = "images/alpha_bg.png"
 var register_wnd_image = "images/register_wnd.jpg"
 var gift_wnd_image = "images/gift_wnd.jpg"
 var rule_wnd_image = "images/rule_wnd.jpg"
 var time_image = "images/count_down.png"
 var hire_link_image = "images/hire_link2.png"
+var score_info_image = "images/score_info.png"
 
 var btn_enter_game_image = "images/btn_enter_game.png"
 var btn_gift_image = "images/btn_gift.png"
@@ -72,12 +74,14 @@ var res_list = [
     box_image,
     star_image,
     game_over_image,
+    game_over_bg_image,
     alpha_bg_image,
     register_wnd_image,
     gift_wnd_image,
     rule_wnd_image,
     time_image,
     hire_link_image,
+    score_info_image,
     btn_enter_game_image,
     btn_gift_image,
     btn_rank_image,
@@ -172,6 +176,8 @@ var scene_obs = [];
 var eat_stars = [];
 var remove_obs = [];
 var cache_sprites = {};
+var this_score_sprite;
+var best_score_sprite;
 
 // Security
 var need_extra_report_score = 80;
@@ -736,10 +742,17 @@ function show_game_over_window()
     stage.addChild(bg);
     fill_sprite(bg);
 
+    var game_over_bg = new Sprite(resources[game_over_bg_image].texture);
+    game_over_bg.anchor.set(0.5);
+    game_over_bg.x = canvas_width / 2;
+    game_over_bg.y = canvas_height * 0.35;
+    game_over_bg.scale.set(1.125);
+    stage.addChild(game_over_bg);
+
     var game_over = new Sprite(resources[game_over_image].texture);
     game_over.anchor.set(0.5);
     game_over.x = canvas_width / 2;
-    game_over.y = canvas_height * 0.2;
+    game_over.y = canvas_height * 0.15;
     stage.addChild(game_over);
 
     var hire_link = new Sprite(resources[hire_link_image].texture);
@@ -749,8 +762,13 @@ function show_game_over_window()
     hire_link.y = canvas_height * 0.88;
     stage.addChild(hire_link);
     // console.log(hire_link);
-    var btn_yoff = 0.63;
+    var btn_yoff = 0.62;
     var btn_interval = 0.1;
+
+    var score_info = new Sprite(resources[score_info_image].texture);
+    score_info.x = canvas_width * 0.25;
+    score_info.y = canvas_height * 0.3;
+    stage.addChild(score_info);
 
     var btn_retry = createButton(
             btn_retry_image, canvas_width / 2, canvas_height * (btn_yoff - btn_interval), 
@@ -777,6 +795,7 @@ function show_game_over_window()
             });
 
     var score = star_score + level_score;
+    /*
     var score_yoff = 0.32;
     var score_interval = 0.06;
     var text_score = createText(
@@ -788,6 +807,19 @@ function show_game_over_window()
     best_score.anchor.set(0.5,0);
     stage.addChild(text_score);
     stage.addChild(best_score);
+    */
+
+    this_score_sprite = new PIXI.extras.BitmapText(score.toString(), { font: '76px Aharoni'});
+    best_score_sprite = new PIXI.extras.BitmapText(user_info.max_score.toString(), { font: '76px Aharoni'});
+    var xoff = 0.6;
+    var yoff = 0.28;
+    var yinterval = 0.06;
+    this_score_sprite.x = xoff * canvas_width;
+    this_score_sprite.y = yoff * canvas_height;
+    best_score_sprite.x = xoff * canvas_width;
+    best_score_sprite.y = (yoff + yinterval) * canvas_height;
+    stage.addChild(this_score_sprite);
+    stage.addChild(best_score_sprite);
    
     stage.addChild(btn_retry);
     stage.addChild(btn_rank);

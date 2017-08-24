@@ -34,7 +34,8 @@ class LoginWindow
         {
             console.log(user_cookie);
             user_info = JSON.parse(user_cookie); 
-            name = user_info.name;
+            if (user_info.id)
+                name = user_info.name;
         }
 
         // Show welcome message

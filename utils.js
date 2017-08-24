@@ -26,8 +26,8 @@ if (!String.prototype.format) {
 // Save user info to cookie
 function save_user_info()
 {
-    console.log("save");
-    setCookie("userinfo", JSON.stringify(user_info), 30);
+    if (user_info.id)
+        setCookie("userinfo", JSON.stringify(user_info), 30);
 }
 
 function shallow_clone(m)

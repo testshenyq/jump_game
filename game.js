@@ -29,7 +29,7 @@ var btn_return_image = "images/btn_return.png"
 var btn_return2_image = "images/btn_return2.png"
 var btn_retry_image = "images/btn_retry.png"
 var brick_line_image = "images/brick_level.jpg"
-var box_image = "images/death_box.png"
+var box_image = [ "images/box0.png", "images/box1.png" ];
 var star_image = "images/star2.png"
 var loading_image = "images/black_bg.jpg"
 var game_over_image = "images/game_over.png"
@@ -54,6 +54,8 @@ var audio_collide = "/audios/collide"
 var audio_jump = "/audios/jump"
 var audio_pick = "/audios/pick"
 var audios = {}
+var shared = false;
+var box_image_idx = 0;
 
 var font0 = 'images/font0.xml'
 
@@ -71,7 +73,8 @@ var res_list = [
     btn_return2_image,
     btn_retry_image,
     brick_line_image,
-    box_image,
+    box_image[0],
+    box_image[1],
     star_image,
     game_over_image,
     game_over_bg_image,
@@ -143,6 +146,7 @@ var jmp_horz_speed = 165;
 var jmp_vert_speed = 600;
 var gravity = 1300;
 var level_height = 600;
+var share_score = 10;
 var gap_size_range = [canvas_width * 0.4, canvas_width * 0.55];
 var gap_pos_range = canvas_width * 0.185;
 var box_pos_info = [
@@ -176,8 +180,8 @@ var scene_obs = [];
 var eat_stars = [];
 var remove_obs = [];
 var cache_sprites = {};
-var this_score_sprite;
-var best_score_sprite;
+var this_score_text;
+var best_score_text;
 
 // Security
 var need_extra_report_score = 80;
@@ -457,8 +461,10 @@ class DeathBox
     constructor(level, idx)
     {
         this.level = level;
-        this.sprite = create_sprite(box_image);
+        this.sprite = create_sprite(box_image[box_image_idx]);
+        box_image_idx = (box_image_idx + 1) % 2;
         this.sprite.anchor.set(0.5);
+        this.sprite.scale.set(1.1);
         this.x = canvas_width / 2 + rand1() * box_pos_info[idx][0];
         this.y = level * level_height + box_pos_info[idx][1] + rand1() * box_pos_info[idx][2];
     }
@@ -809,17 +815,17 @@ function show_game_over_window()
     stage.addChild(best_score);
     */
 
-    this_score_sprite = new PIXI.extras.BitmapText(score.toString(), { font: '76px Aharoni'});
-    best_score_sprite = new PIXI.extras.BitmapText(user_info.max_score.toString(), { font: '76px Aharoni'});
+    this_score_text = new PIXI.extras.BitmapText(score.toString(), { font: '76px Aharoni'});
+    best_score_text = new PIXI.extras.BitmapText(user_info.max_score.toString(), { font: '76px Aharoni'});
     var xoff = 0.6;
     var yoff = 0.28;
     var yinterval = 0.06;
-    this_score_sprite.x = xoff * canvas_width;
-    this_score_sprite.y = yoff * canvas_height;
-    best_score_sprite.x = xoff * canvas_width;
-    best_score_sprite.y = (yoff + yinterval) * canvas_height;
-    stage.addChild(this_score_sprite);
-    stage.addChild(best_score_sprite);
+    this_score_text.x = xoff * canvas_width;
+    this_score_text.y = yoff * canvas_height;
+    best_score_text.x = xoff * canvas_width;
+    best_score_text.y = (yoff + yinterval) * canvas_height;
+    stage.addChild(this_score_text);
+    stage.addChild(best_score_text);
    
     stage.addChild(btn_retry);
     stage.addChild(btn_rank);
@@ -1095,6 +1101,19 @@ function build_star(level)
         var star = new Star(level, i);
         add_object(star);
     }
+}
+
+function notify_shared()
+{
+    if (game_state != "game_over")
+        return;
+
+    // Mark shared & update this score text
+    shared = true;
+    var score = level_score + star_score + share_score;;
+    this_score_text.text = score.toString();
+    if (user_info.max_score < score)
+        best_score_text.text = score.toString();
 }
 
 function play() 

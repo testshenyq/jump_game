@@ -1105,7 +1105,7 @@ function build_star(level)
 
 function notify_shared()
 {
-    if (game_state != "game_over")
+    if (game_state != "game_over" || shared)
         return;
 
     // Mark shared & update this score text

@@ -13,8 +13,8 @@ var Container = PIXI.Container,
 var ActionManager = new ActionManager();
 
 // Hosted in github pages?
-var IN_GHPAGES = "https://raw.githubusercontent.com/testshenyq/jump_game/gh-pages";
-// var IN_GHPAGES = '';
+// var IN_GHPAGES = "https://raw.githubusercontent.com/testshenyq/jump_game/gh-pages";
+var IN_GHPAGES = '';
 
 var player_image = "images/players/player.png";
 var player_dead_image = "images/players/player_dead.png";

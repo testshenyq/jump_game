@@ -151,16 +151,19 @@ var level_height = 600;
 var share_score = 10;
 var gap_size_range = [canvas_width * 0.4, canvas_width * 0.55];
 var gap_pos_range = canvas_width * 0.185;
+
 var box_pos_info = [
-    [canvas_width * 0.185, canvas_height * 0.45, canvas_height * 0.03],
-    [canvas_width * 0.22, canvas_height * 0.2, canvas_height * 0.03],
+    [canvas_width * 0.185, canvas_height * 0.38, canvas_height * 0.03],
+    [canvas_width * 0.22, canvas_height * 0.14, canvas_height * 0.03],
 ];
+
 var star_pos_info = [
-    [canvas_width * 0.14, canvas_height * 0.32, canvas_height * 0.04],
-    [canvas_width * 0.2, canvas_height * 0.1, canvas_height * 0.03]
+    [canvas_width * 0.14, canvas_height * 0.27, canvas_height * 0.04],
+    [canvas_width * 0.2, canvas_height * 0.05, canvas_height * 0.03]
 ];
-var double_star_level = 20;
-var double_box_level = 20;
+
+var double_star_level = 1;
+var double_box_level = 1;
 var prepare_level = canvas_height / level_height;
 var camera_focus_pos = canvas_height / 2;
 var camera_pos = 0;
@@ -216,19 +219,9 @@ function resize() {
     var w, h;
     if (window.screen.width < window.screen.height)
     {
-        /*
         // For mobile phone
-        if (window.innerWidth / window.innerHeight >= ratio) 
-        {
-            w = window.innerHeight * ratio;
-            h = window.innerHeight;
-        }
-        else 
-        */
-        {
-            w = window.innerWidth;
-            h = window.innerWidth / ratio;
-        }
+        w = window.innerWidth;
+        h = window.innerWidth / ratio;
     }
     else
     {
@@ -706,7 +699,7 @@ function show_rule_window()
     bg.interactive = true;
     fill_sprite(bg);
     stage.addChild(bg);
-    var yoff = 0.85;
+    var yoff = 0.7;
 
     create_button(bg, btn_return2_image, 1,
         canvas_width * 0.5, canvas_height * yoff,
@@ -769,11 +762,11 @@ function show_game_over_window()
     hire_link.anchor.set(0.5);
     hire_link.scale.set(1.2);
     hire_link.x = canvas_width / 2;
-    hire_link.y = canvas_height * 0.88;
+    hire_link.y = canvas_height * 0.8;
     stage.addChild(hire_link);
     // console.log(hire_link);
-    var btn_yoff = 0.62;
-    var btn_interval = 0.1;
+    var btn_yoff = 0.58;
+    var btn_interval = 0.09;
 
     var score_info = new Sprite(resources[score_info_image].texture);
     score_info.x = canvas_width * 0.28;
@@ -822,8 +815,8 @@ function show_game_over_window()
     this_score_text = new PIXI.extras.BitmapText(score.toString(), { font: '76px Aharoni'});
     best_score_text = new PIXI.extras.BitmapText(user_info.max_score.toString(), { font: '76px Aharoni'});
     var xoff = 0.63;
-    var yoff = 0.28;
-    var yinterval = 0.06;
+    var yoff = 0.285;
+    var yinterval = 0.051;
     this_score_text.x = xoff * canvas_width;
     this_score_text.y = yoff * canvas_height;
     best_score_text.x = xoff * canvas_width;

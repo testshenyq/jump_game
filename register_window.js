@@ -116,7 +116,7 @@ class RegisterWindow
         show_reg_dom(this);
 
         // Create buttons
-        var btn_off = window_size[1] * 0.15;
+        var btn_off = window_size[1] * 0.3;
         var ok_btn = createButton(btn_ok_image, width/2 - 150, height - btn_off,
             function() {
 

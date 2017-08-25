@@ -108,7 +108,7 @@ class RankWindow
         var font_size = 25;
         var score_x = canvas_width * 0.4;
         var rank_x = canvas_width * 0.77;
-        var label_y = canvas_height * 0.26;
+        var label_y = canvas_height * 0.22;
 
         var label_score = createText('', font_size, '0x030303', score_x, label_y);
         var label_rank = createText('', font_size, '0x030303', rank_x, label_y);

@@ -216,11 +216,21 @@ function resize() {
     var w, h;
     if (window.screen.width < window.screen.height)
     {
-        w = window.innerWidth;
-        h = window.innerWidth / ratio;
+        // For mobile phone
+        if (window.innerWidth / window.innerHeight >= ratio) 
+        {
+            w = window.innerHeight * ratio;
+            h = window.innerHeight;
+        }
+        else 
+        {
+            w = window.innerWidth;
+            h = window.innerWidth / ratio;
+        }
     }
     else
     {
+        // For pc
         w = window.innerHeight * ratio;
         h = window.innerHeight;
     }

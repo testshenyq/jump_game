@@ -216,6 +216,7 @@ function resize() {
     var w, h;
     if (window.screen.width < window.screen.height)
     {
+        /*
         // For mobile phone
         if (window.innerWidth / window.innerHeight >= ratio) 
         {
@@ -223,6 +224,7 @@ function resize() {
             h = window.innerHeight;
         }
         else 
+        */
         {
             w = window.innerWidth;
             h = window.innerWidth / ratio;

@@ -193,8 +193,6 @@ var op_list = [];
 var start_time = 0;
 var delta_time = 0;
 var last_time = 0;
-var frame_time = 0;
-var frame_time_limit = 25; // 30fps
 var last_touch_time = 0;
 var touch_time_interval = 100;
 
@@ -617,19 +615,11 @@ function clear_scene()
 function gameLoop()
 {
     var cur_time = Date.now();
-    var del = cur_time - last_time;
+    delta_time = cur_time - last_time;
     last_time = cur_time;        
 
     //Loop this function 60 times per second
     requestAnimationFrame(gameLoop);
-
-    // Limit frame rate
-    frame_time += del;
-    if (frame_time < frame_time_limit)
-        return;
-
-    delta_time = frame_time;
-    frame_time = 0;
 
     //Update the current game state
     state();
@@ -680,7 +670,7 @@ function show_gift_window()
     fill_sprite(bg);
     stage.addChild(bg);
     var interval = 0.2;
-    var yoff = 0.88;
+    var yoff = 0.75;
 
     // Create buttons
     create_button(bg, btn_rule_image, 1,
@@ -774,7 +764,7 @@ function show_game_over_window()
     var btn_interval = 0.1;
 
     var score_info = new Sprite(resources[score_info_image].texture);
-    score_info.x = canvas_width * 0.25;
+    score_info.x = canvas_width * 0.28;
     score_info.y = canvas_height * 0.3;
     stage.addChild(score_info);
 
@@ -819,7 +809,7 @@ function show_game_over_window()
 
     this_score_text = new PIXI.extras.BitmapText(score.toString(), { font: '76px Aharoni'});
     best_score_text = new PIXI.extras.BitmapText(user_info.max_score.toString(), { font: '76px Aharoni'});
-    var xoff = 0.6;
+    var xoff = 0.63;
     var yoff = 0.28;
     var yinterval = 0.06;
     this_score_text.x = xoff * canvas_width;

@@ -162,8 +162,8 @@ var star_pos_info = [
     [canvas_width * 0.2, canvas_height * 0.05, canvas_height * 0.03]
 ];
 
-var double_star_level = 1;
-var double_box_level = 1;
+var double_star_level = 20;
+var double_box_level = 20;
 var prepare_level = canvas_height / level_height;
 var camera_focus_pos = canvas_height / 2;
 var camera_pos = 0;

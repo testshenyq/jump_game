@@ -175,7 +175,7 @@ class RegisterWindow
     close()
     {
         // Scroll to top
-        window.scroll_by(0,-500);
+        window.scrollBy(0,-500);
         hide_reg_dom();
         stage.removeChild(this.window);
         show_login_window();

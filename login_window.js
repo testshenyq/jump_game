@@ -45,7 +45,7 @@ class LoginWindow
         window.addChild(text);
 
         var btn_xoff = canvas_width * 0.22;
-        var btn_yoff = canvas_height * 0.27;
+        var btn_yoff = canvas_height * 0.35;
         var btn_interval = canvas_height * 0.06;
         create_button(window, btn_student_image, 1, 
                 canvas_width / 2 - btn_xoff, canvas_height - btn_yoff - btn_interval,

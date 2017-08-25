@@ -107,7 +107,7 @@ function start_loading()
     fill_sprite(bg);
     stage.addChild(bg);
 
-    loading_text = createText('Loading 0%', 50, '0xffffff', canvas_width/2, canvas_height/2);
+    loading_text = createText('Loading 0%', 50, '0xffffff', canvas_width/2, canvas_height*0.4);
     loading_text.anchor.set(0.5);
     stage.addChild(loading_text);
 

@@ -138,6 +138,7 @@ class RegisterWindow
 
                     // Close window
                     this_wnd.close();
+                    show_start_window();
                 });
             }.bind(this)
         );

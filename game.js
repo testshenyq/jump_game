@@ -699,7 +699,7 @@ function show_rule_window()
     bg.interactive = true;
     fill_sprite(bg);
     stage.addChild(bg);
-    var yoff = 0.7;
+    var yoff = 0.73;
 
     create_button(bg, btn_return2_image, 1,
         canvas_width * 0.5, canvas_height * yoff,
